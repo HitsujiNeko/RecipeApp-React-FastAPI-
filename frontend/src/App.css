@@ -28,6 +28,15 @@
   color: #61dafb;
 }
 
+body {
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  justify-content: center; /* 横方向中央 */
+  align-items: center; /* 縦方向中央 */
+  background: #f5f6fa;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
