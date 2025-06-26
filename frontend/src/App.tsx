@@ -1,27 +1,51 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
-import IngredientSearch from "./components/IngredientSearch";
-import { MyComponent, MyClassComponent } from "./components/MyComponent";
 import Header from "./components/Header";
-import CategorySelect from "./components/CategorySelect";
-// https://www.youtube.com/watch?v=mwQtDfV5CXU
-//  コンポーネントの分岐から
+import Footer from "./components/Footer";
+import HomeSection from "./components/HomeSection";
+import RecipeSuggestSection from "./components/RecipeSuggestSection";
+import RecipeAddSection from "./components/RecipeAddSection";
+import RecipeListSection from "./components/RecipeListSection";
+import RecipeDetailSection from "./components/RecipeDetailSection";
+import PlaylistBulkAdd from "./components/PlaylistBulkAdd";
 
 function App() {
+  const [nav, setNav] = useState("suggest");
+
+  let content;
+  switch (nav) {
+    case "suggest":
+      content = <RecipeSuggestSection />;
+      break;
+    case "add":
+      content = <RecipeAddSection />;
+      break;
+    case "list":
+      content = <RecipeListSection />;
+      break;
+    case "detail":
+      content = <RecipeDetailSection />;
+      break;
+    case "about":
+      content = <HomeSection />;
+      break;
+    case "playlistBulkAdd":
+      content = <PlaylistBulkAdd />;
+      break;
+    default:
+      content = <RecipeSuggestSection />;
+  }
+
   return (
     <div className="App">
-      <Header />
-      <div>
-        <MyComponent />
-        <MyClassComponent />
-        <IngredientSearch />
-        <CategorySelect
-          value={null}
-          onChange={(categoryId) =>
-            console.log("Selected category ID:", categoryId)
-          }
-        />
-      </div>
+      <Header nav={nav} setNav={setNav} />
+      <nav style={{ margin: "1em 0" }}>
+        <button onClick={() => setNav("playlistBulkAdd")}>
+          YouTubeプレイリスト一括追加
+        </button>
+      </nav>
+      <main>{content}</main>
+      <Footer />
     </div>
   );
 }

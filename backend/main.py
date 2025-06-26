@@ -1,10 +1,13 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Body
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, select
-
+import os
+import requests
+from dotenv import load_dotenv
 from models import Ingredient, Category, Recipe
 from database import create_db, get_session
-
+load_dotenv()
+YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
 
 app = FastAPI()
 
@@ -55,3 +58,54 @@ def create_recipe(recipe: Recipe, session: Session = Depends(get_session)):
     session.commit()
     session.refresh(recipe)
     return recipe
+
+
+
+@app.post("/api/youtube/playlist")
+def fetch_youtube_playlist(playlist_url: str = Body(..., embed=True)):
+    # プレイリストID抽出
+    import re
+    match = re.search(r"[?&]list=([\w-]+)", playlist_url)
+    if not match:
+        return {"error": "Invalid playlist URL"}
+    playlist_id = match.group(1)
+    # playlistItems APIで動画ID一覧取得
+    items = []
+    nextPageToken = None
+    while True:
+        params = {
+            "part": "snippet",
+            "playlistId": playlist_id,
+            "maxResults": 50,
+            "key": YOUTUBE_API_KEY,
+        }
+        if nextPageToken:
+            params["pageToken"] = nextPageToken
+        r = requests.get("https://www.googleapis.com/youtube/v3/playlistItems", params=params)
+        data = r.json()
+        print(data)  # ← ここを追加
+        items.extend(data.get("items", []))
+        nextPageToken = data.get("nextPageToken")
+        if not nextPageToken:
+            break
+    # 必要な情報を整形
+    result = []
+    for item in items:
+        snippet = item["snippet"]
+        result.append({
+            "videoId": snippet["resourceId"]["videoId"],
+            "title": snippet["title"],
+            "description": snippet.get("description", ""),
+            "thumbnail": snippet["thumbnails"]["default"]["url"],
+            "url": f"https://www.youtube.com/watch?v={snippet['resourceId']['videoId']}"
+        })
+    return result
+
+from typing import List
+
+@app.post("/api/recipes/bulk")
+def bulk_add_recipes(recipes: List[Recipe], session: Session = Depends(get_session)):
+    for recipe in recipes:
+        session.add(recipe)
+    session.commit()
+    return {"count": len(recipes)}
