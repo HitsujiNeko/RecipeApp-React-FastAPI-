@@ -1,19 +1,20 @@
 import React from "react";
+import styles from "./HomeSection.module.css";
 
 const HomeSection: React.FC = () => (
   <section>
-    <div className="container mt-5">
-      <h1 className="text-center mb-4">レシピ提案アプリへようこそ</h1>
-      <section className="mb-5">
-        <h2 className="h4">アプリの概要</h2>
+    <div className={styles.homeSection}>
+      <h1>レシピ提案アプリへようこそ</h1>
+      <section>
+        <h2>アプリの概要</h2>
         <p>
           選んだ食材やカテゴリ（主菜、副菜、スープなど）から、YouTubeレシピ動画を提案するアプリです。
           <br />
           食材や作りたいジャンルから、最適なレシピを簡単に探せます。
         </p>
       </section>
-      <section className="mb-5">
-        <h2 className="h4">アプリの使い方</h2>
+      <section>
+        <h2>アプリの使い方</h2>
         <ul>
           <li>「レシピ提案」から食材やカテゴリを選択してレシピを検索</li>
           <li>「レシピ追加」から新しいレシピ（YouTube動画）を登録</li>
@@ -21,9 +22,9 @@ const HomeSection: React.FC = () => (
           <li>レシピ詳細ページで内容の確認・編集・削除が可能</li>
         </ul>
       </section>
-      <section className="mb-5">
-        <h2 className="h4">作成経緯</h2>
-        <p>
+      <section>
+        <h2>作成経緯</h2>
+        <div>
           YouTubeの再生リストが200を超えるってくらい料理が好きで、アプリをつくってみました。
           <br />
           作成経緯は、YouTubeの料理動画再生リストが膨大になりすぎたためです。
@@ -40,10 +41,10 @@ const HomeSection: React.FC = () => (
             <li>選択した食材でレシピをフィルターする</li>
           </ul>
           こんな機能があればなと思い、つくろうとおもったのがこのアプリです。
-        </p>
+        </div>
       </section>
-      <section className="mb-5">
-        <h2 className="h4">機能の追加予定</h2>
+      <section>
+        <h2>機能の追加予定</h2>
         <ul>
           <li>
             YouTube URLからタイトル・概要欄・サムネイル自動取得(PyTubeによる)
@@ -53,8 +54,8 @@ const HomeSection: React.FC = () => (
           <li>デザインの改善</li>
         </ul>
       </section>
-      <section className="mb-5">
-        <h2 className="h4">技術スタック・工夫ポイント</h2>
+      <section>
+        <h2>技術スタック・工夫ポイント</h2>
         <ul>
           <li>
             <b>Django</b>（Python）で構築
@@ -77,7 +78,7 @@ const HomeSection: React.FC = () => (
           </li>
         </ul>
       </section>
-      <div className="text-center mt-4"></div>
+      <div></div>
     </div>
   </section>
 );

@@ -1,16 +1,18 @@
 import React, { useState } from "react";
 import "./App.css";
+import styles from "./components/App.module.css";
+import "./components/style-override.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import HomeSection from "./components/HomeSection";
-import RecipeSuggestSection from "./components/RecipeSuggestSection";
-import RecipeAddSection from "./components/RecipeAddSection";
-import RecipeListSection from "./components/RecipeListSection";
-import RecipeDetailSection from "./components/RecipeDetailSection";
-import PlaylistBulkAdd from "./components/PlaylistBulkAdd";
+import HomeSection from "./components/pages/HomeSection";
+import RecipeSuggestSection from "./components/pages/RecipeSuggestSection";
+import RecipeAddSection from "./components/pages/RecipeAddSection";
+import RecipeListSection from "./components/pages/RecipeListSection";
+import RecipeDetailSection from "./components/pages/RecipeDetailSection";
 
 function App() {
   const [nav, setNav] = useState("suggest");
+  const [selectedRecipeId, setSelectedRecipeId] = useState<number | null>(null);
 
   let content;
   switch (nav) {
@@ -21,29 +23,36 @@ function App() {
       content = <RecipeAddSection />;
       break;
     case "list":
-      content = <RecipeListSection />;
+      content = (
+        <RecipeListSection
+          onRecipeClick={(id: number) => {
+            setSelectedRecipeId(id);
+            setNav("detail");
+          }}
+        />
+      );
       break;
     case "detail":
-      content = <RecipeDetailSection />;
+      content =
+        selectedRecipeId !== null ? (
+          <RecipeDetailSection
+            recipeId={selectedRecipeId}
+            onBack={() => setNav("list")}
+          />
+        ) : (
+          <div>レシピが選択されていません</div>
+        );
       break;
     case "about":
       content = <HomeSection />;
-      break;
-    case "playlistBulkAdd":
-      content = <PlaylistBulkAdd />;
       break;
     default:
       content = <RecipeSuggestSection />;
   }
 
   return (
-    <div className="App">
+    <div className={styles.appContainer}>
       <Header nav={nav} setNav={setNav} />
-      <nav style={{ margin: "1em 0" }}>
-        <button onClick={() => setNav("playlistBulkAdd")}>
-          YouTubeプレイリスト一括追加
-        </button>
-      </nav>
       <main>{content}</main>
       <Footer />
     </div>

@@ -17,11 +17,18 @@ import { Ingredient } from "../types/models";
 import { fetchIngredients } from "../api/api";
 import styles from "./IngredientSearch.module.css";
 
-export default function IngredientSearch() {
+interface IngredientSearchProps {
+  selectedIds: number[];
+  onChange: (ids: number[]) => void;
+}
+
+const IngredientSearch: React.FC<IngredientSearchProps> = ({
+  selectedIds,
+  onChange,
+}) => {
   const [allIngredients, setAllIngredients] = useState<Ingredient[]>([]);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [search, setSearch] = useState("");
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   useEffect(() => {
     fetchIngredients()
@@ -44,9 +51,16 @@ export default function IngredientSearch() {
     );
   };
 
+  const handleToggle = (id: number) => {
+    if (selectedIds.includes(id)) {
+      onChange(selectedIds.filter((i) => i !== id));
+    } else {
+      onChange([...selectedIds, id]);
+    }
+  };
+
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>食材検索</h2>
       <input
         type="text"
         placeholder="食材名・読みで検索"
@@ -69,13 +83,7 @@ export default function IngredientSearch() {
                 <input
                   type="checkbox"
                   checked={selectedIds.includes(ing.id)}
-                  onChange={() => {
-                    if (selectedIds.includes(ing.id)) {
-                      setSelectedIds(selectedIds.filter((id) => id !== ing.id));
-                    } else {
-                      setSelectedIds([...selectedIds, ing.id]);
-                    }
-                  }}
+                  onChange={() => handleToggle(ing.id)}
                 />
                 <span className={styles.ingredientName}>{ing.name}</span>
                 <span className={styles.ingredientType}>（{ing.type}）</span>
@@ -86,4 +94,6 @@ export default function IngredientSearch() {
       </div>
     </div>
   );
-}
+};
+
+export default IngredientSearch;

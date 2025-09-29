@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "./CategorySelect.module.css";
 import { Category } from "../types/models";
 import { fetchCategories } from "../api/api";
 
@@ -37,9 +38,9 @@ export default function CategorySelect({
   return (
     <div>
       <h2>カテゴリ選択</h2>
-      <div style={{ display: "flex", flexWrap: "wrap" }}>
+      <div className={styles.categoryContainer}>
         {categories.map((category) => (
-          <label key={category.id} style={{ marginRight: "10px" }}>
+          <label key={category.id} className={styles.categoryLabel}>
             <input
               type="radio"
               name="category"
@@ -47,7 +48,7 @@ export default function CategorySelect({
               checked={value === category.id}
               onChange={() => onChange(category.id)}
             />
-            {category.name}
+            <span>{category.name}</span>
           </label>
         ))}
       </div>

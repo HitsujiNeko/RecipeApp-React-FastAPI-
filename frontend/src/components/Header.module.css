@@ -1,0 +1,39 @@
+.header {
+  background: #fff3e0;
+  border-bottom: 2px solid #ff9800;
+  padding: 10px 0 6px 0;
+  text-align: center;
+}
+.logo {
+  font-size: 1.7em;
+  font-weight: bold;
+  color: #ff9800;
+  letter-spacing: 2px;
+}
+.navMenu {
+  margin-top: 8px;
+}
+.navButton {
+  background: none;
+  border: none;
+  color: #ff9800;
+  font-size: 1em;
+  margin: 0 8px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+.navButton.selected,
+.navButton:active {
+  background: #ffe0b2;
+  color: #d32f2f;
+}
+@media (max-width: 600px) {
+  .logo {
+    font-size: 1.2em;
+  }
+  .navButton {
+    font-size: 0.95em;
+    margin: 0 4px;
+  }
+}

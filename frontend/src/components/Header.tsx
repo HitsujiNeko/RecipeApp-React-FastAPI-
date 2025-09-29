@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "./Header.module.css"; // スタイルを適用するためのCSSファイル
 
 const NAVS = [
   { key: "suggest", label: "レシピ提案" },
@@ -14,10 +15,10 @@ type HeaderProps = {
 
 const Header: React.FC<HeaderProps> = ({ nav, setNav }) => {
   return (
-    <header className="headerLayout">
-      <div className="headerTop">
+    <header className={styles.header}>
+      <div className={styles.headerTop}>
         {/* サイトロゴ */}
-        <div className="logo">
+        <div className={styles.logo}>
           <button
             onClick={() => setNav("suggest")}
             style={{
@@ -34,7 +35,7 @@ const Header: React.FC<HeaderProps> = ({ nav, setNav }) => {
       {/* ナビゲーションメニュー */}
       <nav>
         <ul
-          className="navMenu"
+          className={styles.navMenu}
           style={{
             display: "flex",
             gap: "24px",

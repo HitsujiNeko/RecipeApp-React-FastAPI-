@@ -1,11 +1,17 @@
-from fastapi import FastAPI, Depends, Body
+from fastapi import FastAPI, Depends, Body, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, select
+from sqlalchemy import select as sa_select
+from sqlalchemy import and_, or_
 import os
 import requests
 from dotenv import load_dotenv
 from models import Ingredient, Category, Recipe
 from database import create_db, get_session
+from typing import List, Optional
+from pydantic import BaseModel
+from fastapi.encoders import jsonable_encoder
+
 load_dotenv()
 YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
 
@@ -46,14 +52,62 @@ def read_categories(session: Session = Depends(get_session)):
     return categories
 
 @app.get("/api/recipes")
-def read_recipes(session: Session = Depends(get_session)):
-    recipes = session.exec(select(Recipe)).all()
+def read_recipes(
+    ingredients: Optional[str] = None,
+    category: Optional[int] = None,
+    session: Session = Depends(get_session),
+):
+    query = select(Recipe)
+    if category:
+        query = query.where(Recipe.category_id == category)
+    recipes = session.exec(query).all()
+    # 食材フィルタ（全て含む場合のみヒット）
+    if ingredients:
+        ingredient_ids = [int(i) for i in ingredients.split(",") if i]
+        if ingredient_ids:
+            filtered = []
+            for recipe in recipes:
+                recipe_ing_ids = [ing.id for ing in recipe.ingredients]
+                if all(i in recipe_ing_ids for i in ingredient_ids):
+                    filtered.append(recipe)
+            recipes = filtered
     return recipes
+
+@app.get("/api/recipes/{recipe_id}")
+def read_recipe_detail(recipe_id: int, session: Session = Depends(get_session)):
+    recipe = session.get(Recipe, recipe_id)
+    if not recipe:
+        raise HTTPException(status_code=404, detail="Recipe not found")
+    # ingredients, categoryも含めて返す
+    data = jsonable_encoder(recipe)
+    # ingredients, categoryを明示的に追加
+    data["ingredients"] = [jsonable_encoder(ing) for ing in recipe.ingredients] if recipe.ingredients else []
+    data["category"] = jsonable_encoder(recipe.category) if recipe.category else None
+    return data
 
 ## POST(新規作成)メソッド
 
+class RecipeCreateRequest(BaseModel):
+    name: str
+    url: str
+    thumbnail: str
+    notes: Optional[str] = None
+    ingredient_ids: List[int]
+    category_id: Optional[int] = None
+
 @app.post("/api/recipes")
-def create_recipe(recipe: Recipe, session: Session = Depends(get_session)):
+def create_recipe(req: RecipeCreateRequest, session: Session = Depends(get_session)):
+    recipe = Recipe(
+        name=req.name,
+        url=req.url,
+        thumbnail=req.thumbnail,
+        notes=req.notes,
+        category_id=req.category_id,
+    )
+    # 食材の関連付け
+    if req.ingredient_ids:
+        ingredients = session.exec(select(Ingredient)).all()
+        recipe.ingredients = [ing for ing in ingredients if ing.id in req.ingredient_ids]
     session.add(recipe)
     session.commit()
     session.refresh(recipe)
@@ -101,11 +155,48 @@ def fetch_youtube_playlist(playlist_url: str = Body(..., embed=True)):
         })
     return result
 
-from typing import List
+class RecipeBulkCreateRequest(BaseModel):
+    name: str
+    url: str
+    thumbnail: str
+    notes: Optional[str] = None
+    ingredient_ids: List[int]
+    category_id: Optional[int] = None
 
 @app.post("/api/recipes/bulk")
-def bulk_add_recipes(recipes: List[Recipe], session: Session = Depends(get_session)):
-    for recipe in recipes:
+def bulk_add_recipes(recipes: List[RecipeBulkCreateRequest], session: Session = Depends(get_session)):
+    for req in recipes:
+        recipe = Recipe(
+            name=req.name,
+            url=req.url,
+            thumbnail=req.thumbnail,
+            notes=req.notes,
+            category_id=req.category_id,
+        )
+        if req.ingredient_ids:
+            ingredients = session.exec(select(Ingredient)).all()
+            recipe.ingredients = [ing for ing in ingredients if ing.id in req.ingredient_ids]
         session.add(recipe)
     session.commit()
     return {"count": len(recipes)}
+
+@app.put("/api/recipes/{recipe_id}")
+def update_recipe(recipe_id: int, updated: Recipe, session: Session = Depends(get_session)):
+    recipe = session.get(Recipe, recipe_id)
+    if not recipe:
+        raise HTTPException(status_code=404, detail="Recipe not found")
+    for field, value in updated.dict(exclude_unset=True).items():
+        setattr(recipe, field, value)
+    session.add(recipe)
+    session.commit()
+    session.refresh(recipe)
+    return recipe
+
+@app.delete("/api/recipes/{recipe_id}")
+def delete_recipe(recipe_id: int, session: Session = Depends(get_session)):
+    recipe = session.get(Recipe, recipe_id)
+    if not recipe:
+        raise HTTPException(status_code=404, detail="Recipe not found")
+    session.delete(recipe)
+    session.commit()
+    return {"ok": True}

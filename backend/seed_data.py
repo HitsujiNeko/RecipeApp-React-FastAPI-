@@ -5,7 +5,7 @@ from database import engine
 
 SQLModel.metadata.create_all(engine)
 ingredients_data = [
-        {"name": "鶏むね肉", "reading": "とりむねにく", "type": "肉"},
+        {"name": "鶏胸肉", "reading": "とりむねにく", "type": "肉"},
         {"name": "鶏もも肉", "reading": "とりももにく", "type": "肉"},
         {"name": "豚ヒレ肉", "reading": "ぶたひれにく", "type": "肉"},
         {"name": "豚バラ肉", "reading": "ぶたばらにく", "type": "肉"},
@@ -29,11 +29,9 @@ ingredients_data = [
         {"name": "サラダチキン", "reading": "さらだちきん", "type": "肉"},
         {"name": "ツナ缶", "reading": "つなかん", "type": "魚"},
         {"name": "鮭", "reading": "さけ", "type": "魚"},
-        {"name": "サバ", "reading": "さば", "type": "魚"},
-        {"name": "鯖の水煮缶", "reading": "さばのみずにかん", "type": "魚"},
+        {"name": "鯖", "reading": "さば", "type": "魚"},
         {"name": "アジ", "reading": "あじ", "type": "魚"},
         {"name": "イワシ", "reading": "いわし", "type": "魚"},
-        {"name": "タラ", "reading": "たら", "type": "魚"},
         {"name": "カツオ", "reading": "かつお", "type": "魚"},
         {"name": "ブリ", "reading": "ぶり", "type": "魚"},
         {"name": "サンマ", "reading": "さんま", "type": "魚"},
@@ -90,7 +88,6 @@ ingredients_data = [
         {"name": "セロリ", "reading": "せろり", "type": "野菜"},
         {"name": "みょうが", "reading": "みょうが", "type": "野菜"},
         {"name": "大葉", "reading": "おおば", "type": "野菜"},
-        {"name": "しそ", "reading": "しそ", "type": "野菜"},
         {"name": "にら", "reading": "にら", "type": "野菜"},
         {"name": "にんにく", "reading": "にんにく", "type": "野菜"},
         {"name": "しょうが", "reading": "しょうが", "type": "野菜"},
