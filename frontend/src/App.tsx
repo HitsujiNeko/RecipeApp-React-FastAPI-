@@ -9,6 +9,7 @@ import RecipeSuggestSection from "./components/pages/RecipeSuggestSection";
 import RecipeAddSection from "./components/pages/RecipeAddSection";
 import RecipeListSection from "./components/pages/RecipeListSection";
 import RecipeDetailSection from "./components/pages/RecipeDetailSection";
+import BottomNavigationbar from "./components/BottomNavigationbar";
 
 function App() {
   const [nav, setNav] = useState("suggest");
@@ -43,7 +44,7 @@ function App() {
           <div>レシピが選択されていません</div>
         );
       break;
-    case "about":
+    case "home":
       content = <HomeSection />;
       break;
     default:
@@ -55,6 +56,7 @@ function App() {
       <Header nav={nav} setNav={setNav} />
       <main>{content}</main>
       <Footer />
+      <BottomNavigationbar current={nav} onChange={(key) => setNav(key)} />
     </div>
   );
 }

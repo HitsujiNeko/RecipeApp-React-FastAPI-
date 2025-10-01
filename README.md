@@ -25,6 +25,9 @@ uvicorn main:app --reload
 
 npm start
 
+### 検証用 YouTube プレイリスト
+https://youtube.com/playlist?list=PL1QpUQswXWtBuQY9WuGLts5Ce003wBxIj&si=HefULTbnN384qSmO
+
 ###　開発方針
 
 1. MVPをWebで完成

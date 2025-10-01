@@ -1,9 +1,8 @@
 import React from "react";
-import styles from "./HomeSection.module.css";
 
 const HomeSection: React.FC = () => (
   <section>
-    <div className={styles.homeSection}>
+    <div>
       <h1>レシピ提案アプリへようこそ</h1>
       <section>
         <h2>アプリの概要</h2>
