@@ -1,17 +1,19 @@
 .categoryContainer {
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-between;
   gap: 10px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .categoryLabel {
   display: flex;
+  width: 45%;
   align-items: center;
   background: #fff3e0;
   border: 2px solid #ff9800;
   border-radius: 18px;
-  padding: 6px 14px 6px 8px;
+  padding: 6px 4px 6px 4px;
   font-size: 1em;
   cursor: pointer;
   transition: border 0.2s, background 0.2s;
@@ -24,21 +26,8 @@
   margin-right: 6px;
 }
 
-.categoryLabel input[type="radio"]:focus {
-  outline: 2px solid #d32f2f;
-}
-
 .categoryLabel input[type="radio"]:checked + span {
   font-weight: bold;
   color: #d32f2f;
 }
 
-@media (max-width: 600px) {
-  .categoryContainer {
-    gap: 6px;
-  }
-  .categoryLabel {
-    font-size: 0.98em;
-    padding: 6px 10px 6px 6px;
-  }
-}

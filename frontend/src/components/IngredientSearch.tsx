@@ -63,7 +63,7 @@ const IngredientSearch: React.FC<IngredientSearchProps> = ({
     <div className={styles.container}>
       <input
         type="text"
-        placeholder="食材名・読みで検索"
+        placeholder="🔍：食材をさがす"
         value={search}
         onChange={handleSearch}
         className={styles.searchInput}
@@ -73,7 +73,7 @@ const IngredientSearch: React.FC<IngredientSearchProps> = ({
         {allIngredients
           .filter((ing) => selectedIds.includes(ing.id))
           .map((ing) => ing.name)
-          .join(", ") || "なし"}
+          .join(", ") || "未選択"}
       </div>
       <div className={styles.listArea}>
         <ul className={styles.list}>
@@ -86,7 +86,6 @@ const IngredientSearch: React.FC<IngredientSearchProps> = ({
                   onChange={() => handleToggle(ing.id)}
                 />
                 <span className={styles.ingredientName}>{ing.name}</span>
-                <span className={styles.ingredientType}>（{ing.type}）</span>
               </label>
             </li>
           ))}

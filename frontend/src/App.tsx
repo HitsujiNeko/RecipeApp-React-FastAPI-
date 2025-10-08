@@ -55,7 +55,6 @@ function App() {
     <div className={styles.appContainer}>
       <Header nav={nav} setNav={setNav} />
       <main>{content}</main>
-      <Footer />
       <BottomNavigationbar current={nav} onChange={(key) => setNav(key)} />
     </div>
   );

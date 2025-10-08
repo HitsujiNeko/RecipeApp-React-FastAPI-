@@ -8,7 +8,7 @@ export default function BottomNavigationbar(props: { current: string; onChange: 
 	const NAV_ITEMS = [
 		{ key: "home", label: "ホーム", icon: <span>🏠</span> },
 		{ key: "suggest", label: "提案", icon: <span>🔍</span> },
-		{ key: "add", label: "レシピ", icon: <span>🍳</span> }, 
+		{ key: "add", label: "レシピ追加", icon: <span>🍳</span> }, 
 	];
 
 	return (

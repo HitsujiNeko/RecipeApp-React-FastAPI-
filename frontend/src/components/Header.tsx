@@ -1,70 +1,30 @@
-import React from "react";
-import styles from "./Header.module.css"; // スタイルを適用するためのCSSファイル
+import styles from "./Header.module.css";
 
-const NAVS = [
+const HEADER_SECTION = [
   { key: "suggest", label: "レシピ提案" },
   { key: "add", label: "レシピ追加" },
   { key: "list", label: "レシピ一覧" },
-  { key: "about", label: "このアプリについて" },
+  { key: "home", label: "HOME" },
 ];
 
-type HeaderProps = {
+type HeaderSectionProps = {
   nav: string;
-  setNav: (nav: string) => void;
+  setNav: (key: string) => void;
 };
 
-const Header: React.FC<HeaderProps> = ({ nav, setNav }) => {
+export default function Header(props: HeaderSectionProps) {
   return (
+    //左に現在表示しているセクション名、右にアプリ名を表示
     <header className={styles.header}>
-      <div className={styles.headerTop}>
-        {/* サイトロゴ */}
-        <div className={styles.logo}>
-          <button
-            onClick={() => setNav("suggest")}
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              color: "inherit",
-            }}
-          >
-            <h1>レシピ提案アプリ</h1>
-          </button>
-        </div>
+      <div className={styles.left}>
+        {HEADER_SECTION.find((section) => section.key === props.nav)?.label}
       </div>
-      {/* ナビゲーションメニュー */}
-      <nav>
-        <ul
-          className={styles.navMenu}
-          style={{
-            display: "flex",
-            gap: "24px",
-            listStyle: "none",
-            padding: 0,
-          }}
-        >
-          {NAVS.map((n) => (
-            <li key={n.key}>
-              <button
-                onClick={() => setNav(n.key)}
-                style={{
-                  textDecoration: nav === n.key ? "underline" : "none",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  fontWeight: nav === n.key ? "bold" : "normal",
-                  color: "inherit",
-                  fontSize: "1em",
-                }}
-              >
-                {n.label}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      <div className={styles.right}>
+        {/* アプリアイコン を入れる*/}
+        <img src="/app_icon.png" alt="アプリアイコン" className={styles.icon} />
+        
+        <p>アプリ名</p>
+      </div>
     </header>
-  );
-};
-
-export default Header;
+  )
+}
