@@ -126,11 +126,11 @@ def create_ingredients():
 
 
 category_data = [
-    {"name": "主菜（肉・魚・大豆・卵）"},
-    {"name": "副菜（野菜・きのこ）"},
-    {"name": "炭水化物（ご飯・麺類）"},
-    {"name": "スープ・汁物"},
-    {"name": "お菓子・スイーツ"},
+    {"name": "主菜"},
+    {"name": "副菜"},
+    {"name": "炭水化物"},
+    {"name": "スープ"},
+    {"name": "お菓子"},
 ]
 
 def create_categories():

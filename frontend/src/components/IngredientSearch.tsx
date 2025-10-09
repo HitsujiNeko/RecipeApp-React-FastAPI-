@@ -13,7 +13,7 @@
 
 //  APIは ../api/api.ts で定義済み
 import React, { useState, useEffect } from "react";
-import { Ingredient } from "../types/models";
+import { IngredientModel } from "../types/models";
 import { fetchIngredients } from "../api/api";
 import styles from "./IngredientSearch.module.css";
 
@@ -26,8 +26,8 @@ const IngredientSearch: React.FC<IngredientSearchProps> = ({
   selectedIds,
   onChange,
 }) => {
-  const [allIngredients, setAllIngredients] = useState<Ingredient[]>([]);
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [allIngredients, setAllIngredients] = useState<IngredientModel[]>([]);
+  const [ingredients, setIngredients] = useState<IngredientModel[]>([]);
   const [search, setSearch] = useState("");
 
   useEffect(() => {

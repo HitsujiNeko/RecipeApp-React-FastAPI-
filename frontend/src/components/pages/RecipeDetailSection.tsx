@@ -7,7 +7,11 @@ import {
   fetchIngredients,
   fetchCategories,
 } from "../../api/api";
-import { Recipe, Ingredient, Category } from "../../types/models";
+import {
+  RecipeModel,
+  IngredientModel,
+  CategoryModel,
+} from "../../types/models";
 import IngredientSearch from "../IngredientSearch";
 import CategorySelect from "../CategorySelect";
 
@@ -22,14 +26,14 @@ const RecipeDetailSection: React.FC<RecipeDetailSectionProps> = ({
 }) => {
   // Recipe型を拡張してcategoryを許容
   const [recipe, setRecipe] = useState<
-    (Recipe & { category?: { id: number; name: string } }) | null
+    (RecipeModel & { category?: { id: number; name: string } }) | null
   >(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
-  const [form, setForm] = useState<Partial<Recipe>>({});
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [form, setForm] = useState<Partial<RecipeModel>>({});
+  const [ingredients, setIngredients] = useState<IngredientModel[]>([]);
+  const [categories, setCategories] = useState<CategoryModel[]>([]);
   // 編集用
   const [editIngredients, setEditIngredients] = useState<number[]>([]);
   const [editCategory, setEditCategory] = useState<number | null>(null);

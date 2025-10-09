@@ -3,6 +3,7 @@ import styles from "./RecipeSuggestSection.module.css";
 import { fetchRecipes } from "../../api/api";
 import IngredientSearch from ".././IngredientSearch";
 import CategorySelect from ".././CategorySelect";
+import RecipeCard from "../common/RecipeCard";
 
 export default function RecipeSuggestSection() {
   const [selectedIngredients, setSelectedIngredients] = useState<number[]>([]);
@@ -33,7 +34,7 @@ export default function RecipeSuggestSection() {
     <section>
       <div className={styles.suggestLayout}>
         <div className={styles.suggestInput}>
-         <h2>食材をえらぶ</h2>
+          <h2>食材をえらぶ</h2>
           <IngredientSearch
             selectedIds={selectedIngredients}
             onChange={setSelectedIngredients}
@@ -53,23 +54,17 @@ export default function RecipeSuggestSection() {
         </div>
         <div className={styles.suggestResults} ref={resultsRef}>
           {loading && <p>検索中...</p>}
-          {error && <p style={{ color: "red" , font: "bold"}}>{error}</p>}
+          {error && <p style={{ color: "red", font: "bold" }}>{error}</p>}
           {recipes.length > 0 ? (
             <div>
               <h2>検索結果: {recipes.length}件</h2>
               <div className={styles.recipeGrid}>
                 {recipes.map((r) => (
-                  <div key={r.id} className={styles.recipeCard}>
-                    <img src={r.thumbnail} alt={r.name} width={120} />
-                    <div>{r.name}</div>
-                    <div>
-                      {r.categories &&
-                        r.categories.map((c: any) => c.name).join(", ")}
-                    </div>
-                    <a href={r.url} target="_blank" rel="noopener noreferrer">
-                      詳細を見る
-                    </a>
-                  </div>
+                  <RecipeCard
+                    key={r.id}
+                    recipe={r}
+                    displayIngredients={false}
+                  />
                 ))}
               </div>
             </div>
@@ -80,5 +75,4 @@ export default function RecipeSuggestSection() {
       </div>
     </section>
   );
-};
-
+}

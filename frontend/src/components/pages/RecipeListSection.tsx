@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./RecipeListSection.module.css";
 import { fetchRecipes, fetchCategories, deleteRecipe } from "../../api/api";
-import { Recipe, Category } from "../../types/models";
+import { RecipeModel, CategoryModel } from "../../types/models";
 
 interface RecipeListSectionProps {
   onRecipeClick: (id: number) => void;
@@ -10,8 +10,8 @@ interface RecipeListSectionProps {
 const RecipeListSection: React.FC<RecipeListSectionProps> = ({
   onRecipeClick,
 }) => {
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [recipes, setRecipes] = useState<RecipeModel[]>([]);
+  const [categories, setCategories] = useState<CategoryModel[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [deleteMode, setDeleteMode] = useState(false);

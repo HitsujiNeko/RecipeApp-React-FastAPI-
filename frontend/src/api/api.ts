@@ -1,16 +1,16 @@
-import { Ingredient, Category, Recipe } from "../types/models";
+import { IngredientModel, CategoryModel, RecipeModel } from "../types/models";
 
 // GET
 
 // 食材一覧を取得
-export async function fetchIngredients(): Promise<Ingredient[]> {
+export async function fetchIngredients(): Promise<IngredientModel[]> {
   const res = await fetch("http://localhost:8000/api/ingredients");
   if (!res.ok) throw new Error("食材一覧の取得に失敗しました");
   return await res.json();
 }
 
 // カテゴリ一覧を取得
-export async function fetchCategories(): Promise<Category[]> {
+export async function fetchCategories(): Promise<CategoryModel[]> {
   const res = await fetch("http://localhost:8000/api/categories");
   if (!res.ok) throw new Error("カテゴリ一覧の取得に失敗しました");
   return await res.json();
@@ -20,7 +20,7 @@ export async function fetchCategories(): Promise<Category[]> {
 export async function fetchRecipes(
   ingredientIds?: number[],
   categoryId?: number | null
-): Promise<Recipe[]> {
+): Promise<RecipeModel[]> {
   const params = new URLSearchParams();
   if (ingredientIds && ingredientIds.length > 0) {
     params.append("ingredients", ingredientIds.join(","));
@@ -61,7 +61,7 @@ export async function bulkAddRecipes(recipes: any[]): Promise<any> {
 }
 
 // レシピ詳細を取得
-export async function fetchRecipeDetail(id: number): Promise<Recipe> {
+export async function fetchRecipeDetail(id: number): Promise<RecipeModel> {
   const res = await fetch(`http://localhost:8000/api/recipes/${id}`);
   if (!res.ok) throw new Error("レシピ詳細の取得に失敗しました");
   return await res.json();
@@ -70,8 +70,8 @@ export async function fetchRecipeDetail(id: number): Promise<Recipe> {
 // レシピ編集
 export async function updateRecipe(
   id: number,
-  data: Partial<Recipe>
-): Promise<Recipe> {
+  data: Partial<RecipeModel>
+): Promise<RecipeModel> {
   const res = await fetch(`http://localhost:8000/api/recipes/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },

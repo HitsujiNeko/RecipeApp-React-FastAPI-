@@ -1,12 +1,13 @@
-# はじめに
+# アイデア
 
-はじめに見ていただけると嬉しいです
-
+- YouTube チャンネルをレシピのモデルに追加
+  → 　チャンネルでレシピをソートできるようにする
 
 # 目標
+
 アプリのリリースを通じて以下の目標を達成する
 
-- 大手IT企業に就職
+- 大手 IT 企業に就職
 
 - エンジニアとして必要なスキルを身につける
 
@@ -17,6 +18,7 @@
 # 開発用メモ
 
 ### 起動方法
+
 - バックエンド
 
 uvicorn main:app --reload
@@ -26,34 +28,39 @@ uvicorn main:app --reload
 npm start
 
 ### 検証用 YouTube プレイリスト
+
 https://youtube.com/playlist?list=PL1QpUQswXWtBuQY9WuGLts5Ce003wBxIj&si=HefULTbnN384qSmO
 
 ###　開発方針
 
-1. MVPをWebで完成
-- FastAPI＋Reactでバックエンド・フロントを形にする
-- モバイル対応のUIを意識してレスポンシブに作る
+1. MVP を Web で完成
+
+- FastAPI ＋ React でバックエンド・フロントを形にする
+- モバイル対応の UI を意識してレスポンシブに作る
 
 2. モバイルアプリ化
-- Expo（React Nativeの開発環境）をセットアップ
-- 既存のReactコンポーネントをReact Native用に移植
-- FastAPIと通信（API利用）
+
+- Expo（React Native の開発環境）をセットアップ
+- 既存の React コンポーネントを React Native 用に移植
+- FastAPI と通信（API 利用）
 
 3. テスト
-- Expo Goアプリで実機テスト
-- iOS/Android両方で挙動確認
+
+- Expo Go アプリで実機テスト
+- iOS/Android 両方で挙動確認
 
 4. リリース準備
-- Apple Developer Program（年間約12,000円）登録
-- Google Play Developer（買い切り25ドル）登録
+
+- Apple Developer Program（年間約 12,000 円）登録
+- Google Play Developer（買い切り 25 ドル）登録
 - アイコン・スクショ・説明文を準備
 
 5. ストア申請
-- iOSは審査が厳しい（1週間前後）
-- Androidは比較的早い（1日程度）
+
+- iOS は審査が厳しい（1 週間前後）
+- Android は比較的早い（1 日程度）
 
 ## 😀 アプリ概要
-
 
 ## 🌐 ポートフォリオサイト
 
@@ -77,5 +84,3 @@ https://youtube.com/playlist?list=PL1QpUQswXWtBuQY9WuGLts5Ce003wBxIj&si=HefULTbn
   <img src="https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white"/>
   <img src="https://img.shields.io/badge/QGIS-589632?style=flat&logo=qgis&logoColor=white"/>
 </p>
-
-

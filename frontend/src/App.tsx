@@ -1,15 +1,14 @@
 import React, { useState } from "react";
 import "./App.css";
 import styles from "./components/App.module.css";
-import "./components/style-override.css";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+import Header from "./components/layout/Header";
+import BottomNavigationbar from "./components/layout/BottomNavigationbar";
+
 import HomeSection from "./components/pages/HomeSection";
 import RecipeSuggestSection from "./components/pages/RecipeSuggestSection";
 import RecipeAddSection from "./components/pages/RecipeAddSection";
 import RecipeListSection from "./components/pages/RecipeListSection";
 import RecipeDetailSection from "./components/pages/RecipeDetailSection";
-import BottomNavigationbar from "./components/BottomNavigationbar";
 
 function App() {
   const [nav, setNav] = useState("suggest");

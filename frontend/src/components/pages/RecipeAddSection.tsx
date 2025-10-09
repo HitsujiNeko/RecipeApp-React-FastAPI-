@@ -3,7 +3,7 @@ import IngredientSearch from "../IngredientSearch";
 import CategorySelect from "../CategorySelect";
 import ThumbnailInput from "../ThumnailInput";
 import { fetchYoutubePlaylist, fetchIngredients } from "../../api/api";
-import { Recipe } from "../../types/models";
+import { RecipeModel } from "../../types/models";
 import styles from "./RecipeAddSection.module.css";
 import PlaylistBulkAdd from "../PlaylistBulkAdd";
 

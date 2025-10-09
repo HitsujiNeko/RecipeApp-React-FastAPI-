@@ -5,7 +5,7 @@ import {
   fetchIngredients,
   fetchCategories,
 } from "../api/api";
-import { Ingredient, Category } from "../types/models";
+import { IngredientModel, CategoryModel } from "../types/models";
 import IngredientSearch from "./IngredientSearch";
 import styles from "./PlaylistBulkAdd.module.css"; // スタイルを適用するためのCSSファイル
 
@@ -15,8 +15,8 @@ const PlaylistBulkAdd: React.FC = () => {
   const [selected, setSelected] = useState<boolean[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [ingredients, setIngredients] = useState<IngredientModel[]>([]);
+  const [categories, setCategories] = useState<CategoryModel[]>([]);
   const [rows, setRows] = useState<any[]>([]); // 各動画の編集状態
 
   // 食材・カテゴリ一覧を取得

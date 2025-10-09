@@ -1,0 +1,10 @@
+.card {
+  background: #fff3e0;
+  border: 1.5px solid #ff9800;
+  border-radius: 8px;
+  padding: 10px 8px;
+  text-align: center;
+  box-shadow: 0 1px 4px #ffe0b2;
+  cursor: pointer;
+  transition: box-shadow 0.2s, border 0.2s;
+}
