@@ -1,134 +1,49 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import styles from "./RecipeListSection.module.css";
 import { fetchRecipes, fetchCategories, deleteRecipe } from "../../api/api";
 import { RecipeModel, CategoryModel } from "../../types/models";
+import RecipeCard from "../common/RecipeCard";  
 
-interface RecipeListSectionProps {
-  onRecipeClick: (id: number) => void;
-}
 
-const RecipeListSection: React.FC<RecipeListSectionProps> = ({
-  onRecipeClick,
-}) => {
+
+
+export default function RecipeListSection() {
+
   const [recipes, setRecipes] = useState<RecipeModel[]>([]);
-  const [categories, setCategories] = useState<CategoryModel[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [deleteMode, setDeleteMode] = useState(false);
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setLoading(true);
-    fetchRecipes(selectedCategory ? undefined : undefined, selectedCategory)
-      .then(setRecipes)
-      .finally(() => setLoading(false));
-    fetchCategories().then(setCategories);
-  }, [selectedCategory]);
+    fetchRecipes()
+      .then((data) => {
+        setRecipes(data);
+      })
+      .catch((err) => {
+        setError("レシピ一覧の取得に失敗しました");
+      });
+    setLoading(false);
+  }, []);
 
-  const handleCardClick = (id: number) => {
-    if (deleteMode) {
-      setSelectedIds((prev) =>
-        prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-      );
-    } else {
-      onRecipeClick(id);
-    }
-  };
-
-  const handleDeleteSelected = async () => {
-    if (!window.confirm("選択したレシピを削除しますか？")) return;
-    for (const id of selectedIds) {
-      try {
-        await deleteRecipe(id);
-      } catch {}
-    }
-    setRecipes((prev) => prev.filter((r) => !selectedIds.includes(r.id)));
-    setSelectedIds([]);
-    setDeleteMode(false);
-  };
-
+  if (loading) {
+    return <div>読み込み中</div>;
+  }
   return (
-    <section>
-      <h2>レシピ一覧</h2>
-      <div>
-        <label>
-          カテゴリ
-          <select
-            value={selectedCategory ?? ""}
-            onChange={(e) =>
-              setSelectedCategory(
-                e.target.value ? Number(e.target.value) : null
-              )
-            }
-          >
-            <option value="">カテゴリ選択</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
+    <div>
+      {error && <div style={{ color: "red" }}>{error}</div>}
+      {recipes.length === 0 ? (
+        <div>レシピが登録されていません</div>
+      ) : (
+        <div>
+          <p>レシピ数：{recipes.length}</p>
+          <div className={styles.grid}>
+            {recipes.map((recipe) => (
+              <RecipeCard key={recipe.id} recipe={recipe} displayIngCat={true}  />
             ))}
-          </select>
-        </label>
-      </div>
-      <button
-        onClick={() => setDeleteMode((v) => !v)}
-        style={{ margin: "12px 0" }}
-      >
-        {deleteMode ? "選択解除" : "削除"}
-      </button>
-      {deleteMode && (
-        <button
-          onClick={handleDeleteSelected}
-          disabled={selectedIds.length === 0}
-          style={{ marginLeft: 8, background: "#d32f2f", color: "#fff" }}
-        >
-          選択したレシピを削除する
-        </button>
+          </div>
+        </div>
       )}
-      <div className={styles.listGrid}>
-        {loading ? (
-          <p>読み込み中...</p>
-        ) : recipes.length === 0 ? (
-          <p>レシピがありません</p>
-        ) : (
-          recipes.map((recipe) => (
-            <div
-              key={recipe.id}
-              className={
-                selectedIds.includes(recipe.id)
-                  ? `${styles.card} ${styles.selected}`
-                  : styles.card
-              }
-              onClick={() => handleCardClick(recipe.id)}
-            >
-              <img
-                src={recipe.thumbnail}
-                alt={recipe.name}
-                className={styles.cardImg}
-              />
-              <h3 className={styles.cardTitle}>{recipe.name}</h3>
-              <div style={{ fontSize: 12, color: "#666" }}>
-                {recipe.categories?.map((c) => c.name).join(", ")}
-              </div>
-              <div style={{ fontSize: 12, color: "#999", margin: "4px 0" }}>
-                {recipe.created_at &&
-                  new Date(recipe.created_at).toLocaleDateString()}
-              </div>
-              <a
-                href={recipe.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ fontSize: 13, color: "#1976d2" }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                YouTubeを見る
-              </a>
-            </div>
-          ))
-        )}
-      </div>
-    </section>
+            
+    </div>
   );
-};
+}
 
-export default RecipeListSection;

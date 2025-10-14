@@ -3,7 +3,6 @@ import IngredientSearch from "../IngredientSearch";
 import CategorySelect from "../CategorySelect";
 import ThumbnailInput from "../ThumnailInput";
 import { fetchYoutubePlaylist, fetchIngredients } from "../../api/api";
-import { RecipeModel } from "../../types/models";
 import styles from "./RecipeAddSection.module.css";
 import PlaylistBulkAdd from "../PlaylistBulkAdd";
 
@@ -93,19 +92,6 @@ const RecipeAddSection: React.FC = () => {
       <form onSubmit={handleSubmit} className={styles.addForm}>
         <div>
           <label className={styles.title}>
-            レシピ名
-            <input
-              type="text"
-              name="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className={styles.input}
-            />
-          </label>
-        </div>
-        <div>
-          <label className={styles.title}>
             YouTube URL
             <input
               type="text"
@@ -118,17 +104,26 @@ const RecipeAddSection: React.FC = () => {
           </label>
         </div>
         <div>
+          <label className={styles.title}>
+            レシピ名
+            <input
+              type="text"
+              name="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className={styles.input}
+            />
+          </label>
+        </div>
+        <div>
           <ThumbnailInput youtubeUrl={youtubeUrl} onChange={setThumbnailUrl} />
         </div>
-        <div>
-          <IngredientSearch
-            selectedIds={ingredientIds}
-            onChange={setIngredientIds}
-          />
-        </div>
-        <div>
-          <CategorySelect value={categoryId} onChange={setCategoryId} />
-        </div>
+        <IngredientSearch
+          selectedIds={ingredientIds}
+          onChange={setIngredientIds}
+        />
+        <CategorySelect value={categoryId} onChange={setCategoryId} />
         <div>
           <label>
             メモ
@@ -136,10 +131,11 @@ const RecipeAddSection: React.FC = () => {
               name="notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
+              className={styles.textarea}
             ></textarea>
           </label>
         </div>
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading} className={styles.submitButton}>
           追加
         </button>
       </form>

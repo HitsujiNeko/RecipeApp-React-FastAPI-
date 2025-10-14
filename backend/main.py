@@ -71,7 +71,13 @@ def read_recipes(
                 if all(i in recipe_ing_ids for i in ingredient_ids):
                     filtered.append(recipe)
             recipes = filtered
-    return recipes
+    result = []
+    for recipe in recipes:
+        data = jsonable_encoder(recipe)
+        data["ingredients"] = [jsonable_encoder(ing) for ing in recipe.ingredients] if recipe.ingredients else []
+        data["category"] = jsonable_encoder(recipe.category) if recipe.category else None
+        result.append(data)
+    return result
 
 @app.get("/api/recipes/{recipe_id}")
 def read_recipe_detail(recipe_id: int, session: Session = Depends(get_session)):

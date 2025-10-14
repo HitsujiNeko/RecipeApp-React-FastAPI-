@@ -2,24 +2,19 @@
   background: #fff3e0;
   border-radius: 12px;
   border: 2px solid #ff9800;
-  padding: 22px 10px;
-  max-width: 420px;
+  padding: 12px 10px;
   margin: 0 auto;
-  box-shadow: 0 2px 8px #ffe0b2;
 }
-.addForm label {
+ .addForm label {
   display: block;
-  margin: 10px 0 4px 0;
   font-weight: bold;
   color: #ff9800;
 }
+
 .addForm input,
 .addForm textarea,
 .addForm select {
-  width: 100%;
-  padding: 8px 10px;
-  border: 1.5px solid #ff9800;
-  border-radius: 6px;
+  padding: 4px 10px;
   font-size: 15px;
   margin-bottom: 10px;
   box-sizing: border-box;
@@ -27,7 +22,7 @@
 }
 .addForm input.input {
   width: 100%;
-  padding: 14px 14px;
+  padding: 10px 14px;
   border: 2.5px solid #ff9800;
   border-radius: 18px;
   font-size: 18px;
@@ -39,18 +34,6 @@
 }
 .addForm input.input:focus {
   border: 2.5px solid #d32f2f;
-}
-.addForm .categorySelect,
-.addForm .ingredientSearch {
-  border: 1.5px solid #ff9800;
-  border-radius: 10px;
-  background: #fff3e0;
-  padding: 10px 8px;
-  margin-bottom: 10px;
-}
-.addForm .categorySelect label {
-  color: #ff9800;
-  font-weight: bold;
 }
 .addForm button {
   margin-top: 12px;
@@ -66,9 +49,29 @@
 .addForm button:active {
   background: #e65100;
 }
-@media (max-width: 600px) {
-  .addForm {
-    padding: 10px 2px;
-    max-width: 100vw;
-  }
+.textarea {
+  width: 100%;
+  height: 100px;
+  padding: 10px 14px;
+  border: 2.5px solid #ff9800;
+  border-radius: 12px;
+  font-size: 16px;
+  box-sizing: border-box;
+  background: #fff;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.submitButton {
+  width: 100%;
+  background: #ff9800;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 0;
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
 }

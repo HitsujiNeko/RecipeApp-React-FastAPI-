@@ -1,44 +1,12 @@
-.listGrid {
+.container {
+  width: 100%;
+}
+
+.grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  
   gap: 12px;
   margin-top: 18px;
 }
-.card {
-  background: #fff3e0;
-  border: 1.5px solid #ff9800;
-  border-radius: 8px;
-  padding: 10px 8px;
-  text-align: center;
-  box-shadow: 0 1px 4px #ffe0b2;
-  cursor: pointer;
-  transition: box-shadow 0.2s, border 0.2s;
-}
-.card.selected {
-  border: 2px solid #d32f2f;
-  background: #fff0e0;
-}
-.card img {
-  width: 100%;
-  height: 110px;
-  object-fit: cover;
-  border-radius: 6px;
-  margin-bottom: 6px;
-}
-.card h3 {
-  margin: 8px 0 4px;
-  font-size: 1.1em;
-}
-.card a {
-  color: #d32f2f;
-  font-size: 13px;
-}
-@media (max-width: 600px) {
-  .listGrid {
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-  }
-  .card {
-    padding: 7px 3px;
-  }
-}
+

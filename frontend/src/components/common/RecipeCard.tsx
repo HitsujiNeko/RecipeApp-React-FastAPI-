@@ -13,28 +13,35 @@ import styles from "./RecipeCard.module.css";
 
 interface RecipeCardProps {
   recipe: RecipeModel;
-  displayIngredients?: boolean; // 追加: 食材リストを表示するかどうか
+  displayIngCat?: boolean; // 追加: 食材リストを表示するかどうか
 }
 
 export default function RecipeCard({
   recipe,
-  displayIngredients,
+  displayIngCat,
 }: RecipeCardProps) {
   return (
     <div className={styles.card}>
-      <h3>{recipe.name}</h3>
+      <p style={{ fontWeight: "bold", fontSize: "16px", marginBottom: "3px" }}>
+        {recipe.name.length > 23
+          ? recipe.name.slice(0, 23) + "..."
+          : recipe.name}
+      </p>
       <img src={recipe.thumbnail} alt={recipe.name} />
-      {displayIngredients && (
+      {displayIngCat && (
         <>
-          <p>つかう食材</p>
-          <ul>
-            {recipe.ingredients.map((ing) => (
-              <li key={ing.id}>{ing.name}</li>
+          <div className={styles.tags}>
+            {(recipe.ingredients || []).map((ing) => (
+              <span key={ing.id} className={styles.tag}>
+                {ing.name}
+              </span>
             ))}
-          </ul>
+          </div>
+          <p>
+            カテゴリ: {recipe.category ? recipe.category.name : ""}
+          </p>
         </>
       )}
-      <p>カテゴリ: {recipe.categories.map((cat) => cat.name).join(", ")}</p>
       <a href={recipe.url} target="_blank" rel="noopener noreferrer">
         YouTubeを見る
       </a>

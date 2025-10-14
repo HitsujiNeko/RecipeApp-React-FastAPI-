@@ -9,6 +9,7 @@ import RecipeSuggestSection from "./components/pages/RecipeSuggestSection";
 import RecipeAddSection from "./components/pages/RecipeAddSection";
 import RecipeListSection from "./components/pages/RecipeListSection";
 import RecipeDetailSection from "./components/pages/RecipeDetailSection";
+import AdminDashboard from "./components/admin/AdminDashboard";
 
 function App() {
   const [nav, setNav] = useState("suggest");
@@ -24,27 +25,22 @@ function App() {
       break;
     case "list":
       content = (
-        <RecipeListSection
-          onRecipeClick={(id: number) => {
-            setSelectedRecipeId(id);
-            setNav("detail");
-          }}
-        />
+        <RecipeListSection/>
       );
       break;
     case "detail":
       content =
         selectedRecipeId !== null ? (
-          <RecipeDetailSection
-            recipeId={selectedRecipeId}
-            onBack={() => setNav("list")}
-          />
+          <RecipeDetailSection/>
         ) : (
           <div>レシピが選択されていません</div>
         );
       break;
     case "home":
-      content = <HomeSection />;
+      content = <HomeSection setNav={setNav} />;
+      break;
+    case "admin":
+      content = <AdminDashboard />;
       break;
     default:
       content = <RecipeSuggestSection />;

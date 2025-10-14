@@ -20,6 +20,6 @@ export type RecipeModel = {
   thumbnail: string;
   notes: string;
   ingredients: IngredientModel[]; // 詳細取得時
-  categories: CategoryModel[]; // 詳細取得時
+  category: CategoryModel; // 詳細取得時
   created_at?: string; // オプション: 日時
 };

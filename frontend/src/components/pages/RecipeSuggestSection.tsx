@@ -4,11 +4,12 @@ import { fetchRecipes } from "../../api/api";
 import IngredientSearch from ".././IngredientSearch";
 import CategorySelect from ".././CategorySelect";
 import RecipeCard from "../common/RecipeCard";
+import { RecipeModel } from "../../types/models";
 
 export default function RecipeSuggestSection() {
   const [selectedIngredients, setSelectedIngredients] = useState<number[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [recipes, setRecipes] = useState<any[]>([]);
+  const [recipes, setRecipes] = useState<RecipeModel[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -63,7 +64,7 @@ export default function RecipeSuggestSection() {
                   <RecipeCard
                     key={r.id}
                     recipe={r}
-                    displayIngredients={false}
+                    displayIngCat={false}
                   />
                 ))}
               </div>
