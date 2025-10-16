@@ -35,10 +35,13 @@ def read_root():
     return {"message": "Hello from FastAPI!"}
 
 
+###
+## API
+###
 
-### API
 
-## GET（取得）メソッド
+
+## Read （取得）　　GETメソッド
 # フロントエンドでAPIを同時取得するため個別に定義
 
 @app.get("/api/ingredients")
@@ -91,7 +94,7 @@ def read_recipe_detail(recipe_id: int, session: Session = Depends(get_session)):
     data["category"] = jsonable_encoder(recipe.category) if recipe.category else None
     return data
 
-## POST(新規作成)メソッド
+## Create (新規作成) POSTメソッド
 
 class RecipeCreateRequest(BaseModel):
     name: str
@@ -186,23 +189,67 @@ def bulk_add_recipes(recipes: List[RecipeBulkCreateRequest], session: Session = 
     session.commit()
     return {"count": len(recipes)}
 
+## Update (更新)  PUTメソッド
+@app.put("/api/ingredients/{ingredient_id}")
+def update_ingredient(ingredient_id: int, updated: Ingredient, session: Session = Depends(get_session)):
+    ingredient = session.get(Ingredient, ingredient_id)  # GETメソッドで取得
+    if not ingredient:
+        raise HTTPException(status_code=404, detail="食材が見つかりません")
+    for field, value in updated.model_dump(exclude_unset=True).items():
+        setattr(ingredient, field, value)  # クライアントから送られた更新データだけを既存のデータに反映する処理
+    session.add(ingredient)  # 変更をセッションに追加
+    session.commit() # データベースにコミット
+    session.refresh(ingredient) # 最新の状態に更新
+    return ingredient
+
+@app.put("/api/categories/{category_id}")
+def update_category(category_id: int, updated: Category, session: Session = Depends(get_session)):
+    category = session.get(Category, category_id)
+    if not category:
+        raise HTTPException(status_code=404, detail="カテゴリーが見つかりません")
+    for field, value in updated.model_dump(exclude_unset=True).items():
+        setattr(category, field, value)
+    session.add(category)
+    session.commit()
+    session.refresh(category)
+    return category 
+
 @app.put("/api/recipes/{recipe_id}")
 def update_recipe(recipe_id: int, updated: Recipe, session: Session = Depends(get_session)):
     recipe = session.get(Recipe, recipe_id)
     if not recipe:
-        raise HTTPException(status_code=404, detail="Recipe not found")
-    for field, value in updated.dict(exclude_unset=True).items():
+        raise HTTPException(status_code=404, detail="レシピが見つかりません")
+    for field, value in updated.model_dump(exclude_unset=True).items():
         setattr(recipe, field, value)
     session.add(recipe)
     session.commit()
     session.refresh(recipe)
     return recipe
 
+## Delete (削除) DELETEメソッド
+@app.delete("/api/ingredients/{ingredient_id}")
+def delete_ingredient(ingredient_id: int, session: Session = Depends(get_session)):
+    ingredient = session.get(Ingredient, ingredient_id)
+    if not ingredient:
+        raise HTTPException(status_code=404, detail="食材が見つかりません")
+    session.delete(ingredient)
+    session.commit()
+    return {"ok": True}
+
+@app.delete("/api/categories/{category_id}")
+def delete_category(category_id: int, session: Session = Depends(get_session)):
+    category = session.get(Category, category_id)
+    if not category:
+        raise HTTPException(status_code=404, detail="カテゴリーが見つかりません")
+    session.delete(category)
+    session.commit()
+    return {"ok": True}
+
 @app.delete("/api/recipes/{recipe_id}")
 def delete_recipe(recipe_id: int, session: Session = Depends(get_session)):
     recipe = session.get(Recipe, recipe_id)
     if not recipe:
-        raise HTTPException(status_code=404, detail="Recipe not found")
+        raise HTTPException(status_code=404, detail="レシピが見つかりません")
     session.delete(recipe)
     session.commit()
     return {"ok": True}

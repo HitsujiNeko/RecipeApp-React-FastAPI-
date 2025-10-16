@@ -22,10 +22,12 @@
 ### 起動方法
 
 - バックエンド
+初回のみ： pip install -r requirements.txt
 
 uvicorn main:app --reload
 
 - フロントエンド
+初回のみ： npm install
 
 npm start
 
