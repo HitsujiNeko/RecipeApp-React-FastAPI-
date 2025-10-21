@@ -6,7 +6,8 @@ import { fetchYoutubePlaylist, fetchIngredients } from "../../api/api";
 import styles from "./RecipeAddSection.module.css";
 import PlaylistBulkAdd from "../PlaylistBulkAdd";
 
-const RecipeAddSection: React.FC = () => {
+
+export default function RecipeAddSection () {
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [thumbnailUrl, setThumbnailUrl] = useState("");
@@ -78,15 +79,18 @@ const RecipeAddSection: React.FC = () => {
 
   return (
     <section>
-      <PlaylistBulkAdd />
-      <p>
-        再生リストのURLをコピペして、一括で登録することもできます。
-        <br />
-        1件ずつ追加する場合は、以下のフォームに入力して「追加」ボタンを押してください。
-        <br />
-        再生リストは公開に設定しておく必要があります。（非公開や限定公開はデータを取得できません）
-        ＜開発メモ＞再生リストを公開にする方法を追加する。（画像付きで）
-      </p>
+      <details>
+        <summary>YouTubeプレイリスト一括追加</summary>
+        <PlaylistBulkAdd />
+        <p>
+          再生リストのURLをコピペして、一括で登録することもできます。
+          <br />
+          1件ずつ追加する場合は、以下のフォームに入力して「追加」ボタンを押してください。
+          <br />
+          再生リストは公開に設定しておく必要があります。（非公開や限定公開はデータを取得できません）
+          ＜開発メモ＞再生リストを公開にする方法を追加する。（画像付きで）
+        </p>
+      </details>
       <h2>レシピ追加</h2>
 
       <form onSubmit={handleSubmit} className={styles.addForm}>
@@ -132,6 +136,7 @@ const RecipeAddSection: React.FC = () => {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               className={styles.textarea}
+              placeholder="🖊調理時間や必要な調味料などを自由に記述"
             ></textarea>
           </label>
         </div>
@@ -143,4 +148,3 @@ const RecipeAddSection: React.FC = () => {
   );
 };
 
-export default RecipeAddSection;

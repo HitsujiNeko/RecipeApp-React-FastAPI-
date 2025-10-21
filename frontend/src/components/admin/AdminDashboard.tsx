@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { fetchIngredients, fetchCategories, fetchRecipes, deleteRecipe } from "../../api/api";
+import { 
+  fetchIngredients, 
+  fetchCategories, 
+  fetchRecipes, 
+  updateCategory,
+  deleteRecipe 
+  } from "../../api/api";
 import { IngredientModel, CategoryModel, RecipeModel } from "../../types/models";
 import styles from "./AdminDashboard.module.css";
 
@@ -49,9 +55,24 @@ export default function AdminDashboard() {
         <h3>カテゴリ一覧</h3>
         <ul>
           {categories.map(cat => (
-            <li key={cat.id}>{cat.name}</li>
+            <li key={cat.id}>
+              <input
+                type="text"
+                value={cat.name}
+                onChange={(e) => {
+                  const updatedCategories = categories.map(c =>
+                    c.id === cat.id ? { ...c, name: e.target.value } : c
+                  );
+                  setCategories(updatedCategories);
+                }}
+              />
+              <button
+                onClick={() => updateCategory(cat.id, { name: cat.name })}
+                style={{ marginLeft: 8 }}>更新</button>
+            </li>
           ))}
         </ul>
+
       </div>
       <div className={styles.section}>
         <h3>レシピ一覧</h3>

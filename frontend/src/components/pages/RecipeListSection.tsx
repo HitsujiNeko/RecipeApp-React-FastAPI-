@@ -7,7 +7,7 @@ import RecipeCard from "../common/RecipeCard";
 
 
 
-export default function RecipeListSection() {
+export default function RecipeListSection({onRecipeClick}: {onRecipeClick: (id: number) => void}) {
 
   const [recipes, setRecipes] = useState<RecipeModel[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,7 +37,12 @@ export default function RecipeListSection() {
           <p>レシピ数：{recipes.length}</p>
           <div className={styles.grid}>
             {recipes.map((recipe) => (
-              <RecipeCard key={recipe.id} recipe={recipe} displayIngCat={true}  />
+              <RecipeCard 
+                key={recipe.id} 
+                recipe={recipe}
+                displayIngCat={true}  
+                onClick={() => onRecipeClick(recipe.id)} 
+                />
             ))}
           </div>
         </div>

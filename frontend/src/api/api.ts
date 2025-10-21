@@ -36,6 +36,12 @@ export async function fetchRecipes(
   return await res.json();
 }
 
+// レシピ詳細を取得
+export async function fetchRecipeDetail(id: number): Promise<RecipeModel> {
+  const res = await fetch(`http://localhost:8000/api/recipes/${id}`);
+  if (!res.ok) throw new Error("レシピ詳細の取得に失敗しました");
+  return await res.json();
+}
 // YouTubeプレイリストから動画情報を取得
 export async function fetchYoutubePlaylist(
   playlistUrl: string
@@ -49,6 +55,36 @@ export async function fetchYoutubePlaylist(
   return await res.json();
 }
 
+// 
+// POST
+// 
+
+// 食材追加
+export async function addIngredient(
+  data: Partial<IngredientModel>
+): Promise<IngredientModel> {
+  const res = await fetch("http://localhost:8000/api/ingredients", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("食材追加に失敗しました");
+  return await res.json();
+}
+// カテゴリー追加
+export async function addCategory(
+  data: Partial<CategoryModel>
+): Promise<CategoryModel> {
+  const res = await fetch("http://localhost:8000/api/categories", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("カテゴリ追加に失敗しました");
+  return await res.json();
+}
+
+
 // レシピ一括追加
 export async function bulkAddRecipes(recipes: any[]): Promise<any> {
   const res = await fetch("http://localhost:8000/api/recipes/bulk", {
@@ -60,10 +96,37 @@ export async function bulkAddRecipes(recipes: any[]): Promise<any> {
   return await res.json();
 }
 
-// レシピ詳細を取得
-export async function fetchRecipeDetail(id: number): Promise<RecipeModel> {
-  const res = await fetch(`http://localhost:8000/api/recipes/${id}`);
-  if (!res.ok) throw new Error("レシピ詳細の取得に失敗しました");
+
+
+// 
+// PUT
+// 
+
+// 食材編集
+export async function updateIngredient(
+  id: number,
+  data: Partial<IngredientModel>
+): Promise<IngredientModel> {
+  const res = await fetch(`http://localhost:8000/api/ingredients/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("食材編集に失敗しました");
+  return await res.json();
+}
+
+// カテゴリー編集
+export async function updateCategory(
+  id: number,
+  data: Partial<CategoryModel>
+): Promise<CategoryModel> {
+  const res = await fetch(`http://localhost:8000/api/categories/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("カテゴリ編集に失敗しました");
   return await res.json();
 }
 
@@ -80,6 +143,28 @@ export async function updateRecipe(
   if (!res.ok) throw new Error("レシピ編集に失敗しました");
   return await res.json();
 }
+
+// 
+// DELETE
+// 
+
+// 食材削除
+export async function deleteIngredient(id: number): Promise<void> {
+  const res = await fetch(`http://localhost:8000/api/ingredients/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("食材削除に失敗しました");
+}
+
+// カテゴリ削除
+export async function deleteCategory(id: number): Promise<void> {
+  const res = await fetch(`http://localhost:8000/api/categories/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("カテゴリ削除に失敗しました");
+}
+
+
 
 // レシピ削除
 export async function deleteRecipe(id: number): Promise<void> {

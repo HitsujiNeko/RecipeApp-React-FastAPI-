@@ -6,7 +6,7 @@ import CategorySelect from ".././CategorySelect";
 import RecipeCard from "../common/RecipeCard";
 import { RecipeModel } from "../../types/models";
 
-export default function RecipeSuggestSection() {
+export default function RecipeSuggestSection({onRecipeClick}: {onRecipeClick: (id: number) => void}) {
   const [selectedIngredients, setSelectedIngredients] = useState<number[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [recipes, setRecipes] = useState<RecipeModel[]>([]);
@@ -65,6 +65,7 @@ export default function RecipeSuggestSection() {
                     key={r.id}
                     recipe={r}
                     displayIngCat={false}
+                    onClick={() =>  onRecipeClick(r.id)}
                   />
                 ))}
               </div>

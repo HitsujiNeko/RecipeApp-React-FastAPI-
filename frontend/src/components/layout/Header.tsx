@@ -5,6 +5,7 @@ const HEADER_SECTION = [
   { key: "add", label: "レシピ追加" },
   { key: "list", label: "レシピ一覧" },
   { key: "home", label: "HOME" },
+  { key: "detail", label: "レシピを見る" },
 ];
 
 type HeaderSectionProps = {
@@ -20,7 +21,6 @@ export default function Header(props: HeaderSectionProps) {
         {HEADER_SECTION.find((section) => section.key === props.nav)?.label}
       </div>
       <div className={styles.right}>
-        {/* アプリアイコン を入れる*/}
         <img src="/app_icon.png" alt="アプリアイコン" className={styles.icon} />
         
         <p>アプリ名</p>

@@ -14,20 +14,24 @@ import styles from "./RecipeCard.module.css";
 interface RecipeCardProps {
   recipe: RecipeModel;
   displayIngCat?: boolean; // 追加: 食材リストを表示するかどうか
+  onClick: () => void; 
 }
 
 export default function RecipeCard({
   recipe,
   displayIngCat,
+  onClick,
 }: RecipeCardProps) {
   return (
-    <div className={styles.card}>
+    <div className={styles.card} onClick={onClick} style={{ cursor: "pointer" }}>
       <p style={{ fontWeight: "bold", fontSize: "16px", marginBottom: "3px" }}>
         {recipe.name.length > 23
           ? recipe.name.slice(0, 23) + "..."
           : recipe.name}
       </p>
-      <img src={recipe.thumbnail} alt={recipe.name} />
+      <a href={recipe.url} target="_blank" rel="noopener noreferrer">
+        <img src={recipe.thumbnail} alt={recipe.name} />
+      </a>
       {displayIngCat && (
         <>
           <div className={styles.tags}>
@@ -37,14 +41,11 @@ export default function RecipeCard({
               </span>
             ))}
           </div>
-          <p>
+          <p className={styles.category}>
             カテゴリ: {recipe.category ? recipe.category.name : ""}
           </p>
         </>
       )}
-      <a href={recipe.url} target="_blank" rel="noopener noreferrer">
-        YouTubeを見る
-      </a>
     </div>
   );
 }

@@ -18,20 +18,28 @@ function App() {
   let content;
   switch (nav) {
     case "suggest":
-      content = <RecipeSuggestSection />;
+      content = <RecipeSuggestSection 
+                    onRecipeClick={(id) =>{
+                      setSelectedRecipeId(id);
+                      setNav("detail")
+                    }} 
+                />;
       break;
     case "add":
       content = <RecipeAddSection />;
       break;
     case "list":
-      content = (
-        <RecipeListSection/>
-      );
+      content = <RecipeListSection 
+                  onRecipeClick={(id) =>{
+                    setSelectedRecipeId(id);
+                    setNav("detail")
+                  }} 
+                 />;
       break;
     case "detail":
       content =
         selectedRecipeId !== null ? (
-          <RecipeDetailSection/>
+          <RecipeDetailSection recipeId={ selectedRecipeId }/>
         ) : (
           <div>レシピが選択されていません</div>
         );
@@ -43,7 +51,12 @@ function App() {
       content = <AdminDashboard />;
       break;
     default:
-      content = <RecipeSuggestSection />;
+      content = <RecipeSuggestSection 
+                  onRecipeClick={(id) =>{
+                    setSelectedRecipeId(id);
+                    setNav("detail")
+                  }} 
+                />;
   }
 
   return (

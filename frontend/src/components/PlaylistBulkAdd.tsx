@@ -133,7 +133,6 @@ const PlaylistBulkAdd: React.FC = () => {
 
   return (
     <section>
-      <h2>YouTubeプレイリスト一括追加</h2>
       <input
         type="text"
         value={playlistUrl}

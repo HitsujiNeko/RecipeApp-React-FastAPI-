@@ -3,12 +3,16 @@
   background: #fff3e0;
   border: 1.5px solid #ff9800;
   border-radius: 8px;
-  padding: 3px 8px;
+  padding: 1px 8px;
   text-align: center;
   box-shadow: 0 1px 4px #ffe0b2;
   cursor: pointer;
   transition: box-shadow 0.2s, border 0.2s;
   margin: 0 auto;
+}
+.card p {
+
+  margin: 3px 0;
 }
 
 .card img {
@@ -21,8 +25,8 @@
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 6px;
+  gap: 3px;
+  margin-bottom: 0px;
   justify-content: center;
 }
 
@@ -35,4 +39,10 @@
   font-weight: 500;
   border: 1px solid #ff9800;
   display: inline-block;
+}
+
+.category {
+  font-size: 14px;
+  color: #bf360c;
+  margin-top: 2px;
 }
