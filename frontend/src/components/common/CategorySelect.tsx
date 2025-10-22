@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./CategorySelect.module.css";
-import { CategoryModel } from "../types/models";
-import { fetchCategories } from "../api/api";
+import { CategoryModel } from "../../types/models";
+import { fetchCategories } from "../../api/api";
 
 // 食材検索欄のコンポーネント
 

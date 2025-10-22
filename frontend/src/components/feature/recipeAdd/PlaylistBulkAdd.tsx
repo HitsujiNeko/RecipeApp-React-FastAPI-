@@ -4,9 +4,9 @@ import {
   bulkAddRecipes,
   fetchIngredients,
   fetchCategories,
-} from "../api/api";
-import { IngredientModel, CategoryModel } from "../types/models";
-import IngredientSearch from "./IngredientSearch";
+} from "../../../api/api";
+import { IngredientModel, CategoryModel } from "../../../types/models";
+import IngredientSearch from "../../common/IngredientSearch";
 import styles from "./PlaylistBulkAdd.module.css"; // スタイルを適用するためのCSSファイル
 
 const PlaylistBulkAdd: React.FC = () => {

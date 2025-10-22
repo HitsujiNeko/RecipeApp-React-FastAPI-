@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import IngredientSearch from "../IngredientSearch";
-import CategorySelect from "../CategorySelect";
-import ThumbnailInput from "../ThumnailInput";
+import IngredientSearch from "../common/IngredientSearch";
+import CategorySelect from "../common/CategorySelect";
+import ThumbnailInput from "../feature/recipeAdd/ThumnailInput";
 import { fetchYoutubePlaylist, fetchIngredients } from "../../api/api";
 import styles from "./RecipeAddSection.module.css";
-import PlaylistBulkAdd from "../PlaylistBulkAdd";
+import PlaylistBulkAdd from "../feature/recipeAdd/PlaylistBulkAdd";
 
 
 export default function RecipeAddSection () {

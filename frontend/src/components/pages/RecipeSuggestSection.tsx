@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
 import styles from "./RecipeSuggestSection.module.css";
 import { fetchRecipes } from "../../api/api";
-import IngredientSearch from ".././IngredientSearch";
-import CategorySelect from ".././CategorySelect";
+import IngredientSearch from "../common/IngredientSearch";
+import CategorySelect from "../common/CategorySelect";
 import RecipeCard from "../common/RecipeCard";
 import { RecipeModel } from "../../types/models";
 

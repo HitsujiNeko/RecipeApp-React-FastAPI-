@@ -1,4 +1,5 @@
 import { RecipeModel } from "../../types/models";
+import IngredientTag from "./IngredientTag";
 import styles from "./RecipeCard.module.css";
 
 // export type Recipe = {
@@ -36,9 +37,7 @@ export default function RecipeCard({
         <>
           <div className={styles.tags}>
             {(recipe.ingredients || []).map((ing) => (
-              <span key={ing.id} className={styles.tag}>
-                {ing.name}
-              </span>
+              <IngredientTag ingredient={ing} />
             ))}
           </div>
           <p className={styles.category}>

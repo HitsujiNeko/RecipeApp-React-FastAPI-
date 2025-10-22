@@ -14,7 +14,6 @@ export default function RecipeDetailSection({ recipeId }: RecipeDetailSectionPro
     fetchRecipeDetail(recipeId)
       .then((data: RecipeModel) => {
         setRecipe(data);
-        console.log('レシピ', data);
       })
       .catch((err) => {
         console.error("レシピ詳細の取得に失敗しました", err);
@@ -38,7 +37,7 @@ export default function RecipeDetailSection({ recipeId }: RecipeDetailSectionPro
         ))}
       </ul>
       <h3>メモ:</h3>
-      <p>{recipe.notes}</p>
+      {recipe.notes === "" ? <p>メモは登録されていません</p> : <p>{recipe.notes}</p>}
       <a href={recipe.url} target="_blank" rel="noopener noreferrer">
         YouTubeで見る
       </a>

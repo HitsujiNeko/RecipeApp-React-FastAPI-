@@ -13,8 +13,9 @@
 
 //  APIは ../api/api.ts で定義済み
 import React, { useState, useEffect } from "react";
-import { IngredientModel } from "../types/models";
-import { fetchIngredients } from "../api/api";
+import { IngredientModel } from "../../types/models";
+import { fetchIngredients } from "../../api/api";
+import IngredientTag from "./IngredientTag";
 import styles from "./IngredientSearch.module.css";
 
 interface IngredientSearchProps {
@@ -70,10 +71,13 @@ const IngredientSearch: React.FC<IngredientSearchProps> = ({
       />
       <div className={styles.selected}>
         <strong>選択中：</strong>
-        {allIngredients
-          .filter((ing) => selectedIds.includes(ing.id))
-          .map((ing) => ing.name)
-          .join(", ") || "未選択"}
+        {selectedIds.length === 0
+          ? "未選択"
+          : allIngredients
+              .filter((ing) => selectedIds.includes(ing.id))
+              .map((ing) => (
+                <IngredientTag key={ing.id} ingredient={ing} />
+              ))}
       </div>
       <div className={styles.listArea}>
         <ul className={styles.list}>
