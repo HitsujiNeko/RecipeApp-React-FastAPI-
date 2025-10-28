@@ -92,10 +92,16 @@ export default function RecipeAddSection () {
         </p>
       </details>
       <h2>レシピ追加</h2>
-
-      <form onSubmit={handleSubmit} className={styles.addForm}>
+{/* .addForm {
+  background: #fff3e0;
+  border-radius: 12px;
+  border: 2px solid #ff9800;
+  padding: 12px 10px;
+  margin: 0 auto;
+} */}
+      <form onSubmit={handleSubmit} className="bg-orange-100 p-4 rounded-lg border-2 border-orange-400 mx-auto">
         <div>
-          <label className={styles.title}>
+          <label className="block font-bold mb-2">
             YouTube URL
             <input
               type="text"
@@ -103,7 +109,7 @@ export default function RecipeAddSection () {
               value={youtubeUrl}
               onChange={(e) => setYoutubeUrl(e.target.value)}
               required
-              className={styles.input}
+              className="bg-white rounded-md w-full mt-1 p-2 border border-gray-300"
             />
           </label>
         </div>
@@ -116,7 +122,7 @@ export default function RecipeAddSection () {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className={styles.input}
+              className="bg-white rounded-md w-full mt-1 p-2 border border-gray-300"
             />
           </label>
         </div>
@@ -140,7 +146,11 @@ export default function RecipeAddSection () {
             ></textarea>
           </label>
         </div>
-        <button type="submit" disabled={loading} className={styles.submitButton}>
+        <button 
+          type="submit" 
+          disabled={loading} 
+          className="bg-orange-400 w-full text-white font-bold py-2 px-4 rounded hover:bg-orange-600 disabled:opacity-50"
+        >
           追加
         </button>
       </form>
