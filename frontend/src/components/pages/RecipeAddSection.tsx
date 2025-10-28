@@ -3,11 +3,9 @@ import IngredientSearch from "../common/IngredientSearch";
 import CategorySelect from "../common/CategorySelect";
 import ThumbnailInput from "../feature/recipeAdd/ThumnailInput";
 import { fetchYoutubePlaylist, fetchIngredients } from "../../api/api";
-import styles from "./RecipeAddSection.module.css";
 import PlaylistBulkAdd from "../feature/recipeAdd/PlaylistBulkAdd";
 
-
-export default function RecipeAddSection () {
+export default function RecipeAddSection() {
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [thumbnailUrl, setThumbnailUrl] = useState("");
@@ -91,15 +89,10 @@ export default function RecipeAddSection () {
           ＜開発メモ＞再生リストを公開にする方法を追加する。（画像付きで）
         </p>
       </details>
-      <h2>レシピ追加</h2>
-{/* .addForm {
-  background: #fff3e0;
-  border-radius: 12px;
-  border: 2px solid #ff9800;
-  padding: 12px 10px;
-  margin: 0 auto;
-} */}
-      <form onSubmit={handleSubmit} className="bg-orange-100 p-4 rounded-lg border-2 border-orange-400 mx-auto">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-orange-100 p-4 rounded-lg border-2 common-border-orange outline-none mt-4 mb-8 max-w-lg"
+      >
         <div>
           <label className="block font-bold mb-2">
             YouTube URL
@@ -109,12 +102,12 @@ export default function RecipeAddSection () {
               value={youtubeUrl}
               onChange={(e) => setYoutubeUrl(e.target.value)}
               required
-              className="bg-white rounded-md w-full mt-1 p-2 border border-gray-300"
+              className="bg-white rounded-md w-full mt-1 p-2 common-border-orange outline-none"
             />
           </label>
         </div>
         <div>
-          <label className={styles.title}>
+          <label className="block font-bold mb-2">
             レシピ名
             <input
               type="text"
@@ -122,7 +115,7 @@ export default function RecipeAddSection () {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="bg-white rounded-md w-full mt-1 p-2 border border-gray-300"
+              className="bg-white rounded-md w-full mt-1 p-2 border common-border-orange outline-none"
             />
           </label>
         </div>
@@ -135,20 +128,20 @@ export default function RecipeAddSection () {
         />
         <CategorySelect value={categoryId} onChange={setCategoryId} />
         <div>
-          <label>
+          <label className="block font-bold mb-2 mt-2">
             メモ
             <textarea
               name="notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className={styles.textarea}
+              className="w-full h-24 p-3 rounded-lg mt-1 resize-none common-border-orange outline-none"
               placeholder="🖊調理時間や必要な調味料などを自由に記述"
             ></textarea>
           </label>
         </div>
-        <button 
-          type="submit" 
-          disabled={loading} 
+        <button
+          type="submit"
+          disabled={loading}
           className="bg-orange-400 w-full text-white font-bold py-2 px-4 rounded hover:bg-orange-600 disabled:opacity-50"
         >
           追加
@@ -156,5 +149,4 @@ export default function RecipeAddSection () {
       </form>
     </section>
   );
-};
-
+}

@@ -42,29 +42,49 @@ export default function CategorySelect({
   }, []); // [] にすると最初の1回だけ実行される
 
   return (
-    <div className={styles.categoryContainer}>
+    <div className="grid grid-cols-3 gap-4 my-4">
       {/* デフォルトはすべてのカテゴリを選択*/}
-      <label key={0} className={styles.categoryLabel}>
+      <label
+        key={0}
+        className={`flex flex-col items-center justify-center py-3 px-4 rounded-full border-2 cursor-pointer shadow-sm transition
+        ${
+          value === null
+            ? "bg-orange-100 border-orange-500 text-orange-700 scale-105"
+            : "bg-white border-gray-300 text-gray-700 hover:border-orange-400"
+        }
+      `}
+      >
         <input
           type="radio"
           name="category"
+          className="hidden"
           value={0}
           checked={value === null} // valueがnullのときにチェックされる
           onChange={() => onChange(null)} // 選択が変わったときにonChangeを呼び出す
         />
-        <span>すべて</span>
+        <span className="text-sm">すべて</span>
       </label>
       {/* 取得したカテゴリ一覧を表示 */}
       {categories.map((category) => (
-        <label key={category.id} className={styles.categoryLabel}>
+        <label
+          key={category.id}
+          className={`flex flex-col items-center justify-center py-3 px-4 rounded-full border-2 cursor-pointer shadow-sm transition
+          ${
+            value === category.id
+              ? "bg-orange-100 border-orange-500 text-orange-700 scale-105"
+              : "bg-white border-gray-300 text-gray-700 hover:border-orange-400"
+          }
+        `}
+        >
           <input
             type="radio"
             name="category"
+            className="hidden"
             value={category.id}
             checked={value === category.id}
             onChange={() => onChange(category.id)} // 選択が変わったときにonChangeを呼び出す
           />
-          <span>{category.name}</span>
+          <span className="text-sm">{category.name}</span>
         </label>
       ))}
     </div>
