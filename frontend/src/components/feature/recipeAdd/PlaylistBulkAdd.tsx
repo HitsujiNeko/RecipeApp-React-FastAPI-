@@ -7,9 +7,10 @@ import {
 } from "../../../api/api";
 import { IngredientModel, CategoryModel } from "../../../types/models";
 import IngredientSearch from "../../common/IngredientSearch";
-import styles from "./PlaylistBulkAdd.module.css"; // スタイルを適用するためのCSSファイル
 
-const PlaylistBulkAdd: React.FC = () => {
+
+
+export default function PlaylistBulkAdd() {
   const [playlistUrl, setPlaylistUrl] = useState("");
   const [videos, setVideos] = useState<any[]>([]);
   const [selected, setSelected] = useState<boolean[]>([]);
@@ -25,7 +26,7 @@ const PlaylistBulkAdd: React.FC = () => {
     fetchCategories().then(setCategories);
   }, []);
 
-  // 説明文から食材IDリストを抽出
+  // 説明文から食材IDリストを抽出する関数
   function extractIngredientIds(desc: string): number[] {
     const ids: number[] = [];
     for (const ing of ingredients) {
@@ -259,4 +260,3 @@ const PlaylistBulkAdd: React.FC = () => {
   );
 };
 
-export default PlaylistBulkAdd;

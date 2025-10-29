@@ -1,5 +1,4 @@
 import React from "react";
-import styles from "./CategorySelect.module.css";
 import { CategoryModel } from "../../types/models";
 import { fetchCategories } from "../../api/api";
 
@@ -20,6 +19,7 @@ import { fetchCategories } from "../../api/api";
 type CategorySelectProps = {
   value: number | null; // 現在選択中のカテゴリID（未選択ならnull）
   onChange: (categoryId: number | null) => void; // 選択が変わったとき呼ばれる関数
+  enableSelectAll?: boolean; // すべて選択オプションを有効にするかどうか（デフォルトはtrue）
   // OnChangeは引数がcategoryIdで戻り値はvoid（なし）
 };
 // voidは　Pythonでいう　returnなしのdef 関数　のイメージ
@@ -27,6 +27,7 @@ type CategorySelectProps = {
 export default function CategorySelect({
   value,
   onChange,
+  enableSelectAll = true,
 }: CategorySelectProps) {
   // CategorySelectPropsのvalue, onChangeを引数にとる
 
@@ -43,13 +44,13 @@ export default function CategorySelect({
 
   return (
     <div className="grid grid-cols-3 gap-4 my-4">
-      {/* デフォルトはすべてのカテゴリを選択*/}
+      {enableSelectAll !== false && ( // enableSelectAllがfalseでない場合に「すべて」オプションを表示
       <label
         key={0}
-        className={`flex flex-col items-center justify-center py-3 px-4 rounded-full border-2 cursor-pointer shadow-sm transition
+        className={`flex flex-col items-center justify-center py-2 px-4 rounded-full border-2 cursor-pointer shadow-sm transition
         ${
           value === null
-            ? "bg-orange-100 border-orange-500 text-orange-700 scale-105"
+            ? "bg-orange-300 border-orange-500 text-orange-700 scale-105"
             : "bg-white border-gray-300 text-gray-700 hover:border-orange-400"
         }
       `}
@@ -64,14 +65,14 @@ export default function CategorySelect({
         />
         <span className="text-sm">すべて</span>
       </label>
-      {/* 取得したカテゴリ一覧を表示 */}
+      )}
       {categories.map((category) => (
         <label
           key={category.id}
-          className={`flex flex-col items-center justify-center py-3 px-4 rounded-full border-2 cursor-pointer shadow-sm transition
+          className={`flex flex-col items-center justify-center py-2 px-4 rounded-full border-2 cursor-pointer shadow-sm transition
           ${
             value === category.id
-              ? "bg-orange-100 border-orange-500 text-orange-700 scale-105"
+              ? "bg-orange-300 border-orange-500 text-orange-700 scale-105"
               : "bg-white border-gray-300 text-gray-700 hover:border-orange-400"
           }
         `}

@@ -67,7 +67,7 @@ const IngredientSearch: React.FC<IngredientSearchProps> = ({
         placeholder="🔍：食材をさがす"
         value={search}
         onChange={handleSearch}
-        className={styles.searchInput}
+        className="w-full p-2 mb-2 rounded-lg outline-none common-border-orange"
       />
       <div className={styles.selected}>
         <strong>選択中：</strong>

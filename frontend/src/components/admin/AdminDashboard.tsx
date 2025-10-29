@@ -4,6 +4,7 @@ import {
   fetchCategories, 
   fetchRecipes, 
   updateCategory,
+  deleteIngredient,
   deleteRecipe 
   } from "../../api/api";
 import { IngredientModel, CategoryModel, RecipeModel } from "../../types/models";
@@ -31,6 +32,12 @@ export default function AdminDashboard() {
       .finally(() => setLoading(false));
   }, []);
 
+  const handleDeleteIngredient = async (id: number) => {
+    if (!window.confirm("本当に削除しますか？")) return;
+    await deleteIngredient(id);
+    setIngredients(ingredients.filter(ing => ing.id !== id));
+  };
+
   const handleDeleteRecipe = async (id: number) => {
     if (!window.confirm("本当に削除しますか？")) return;
     await deleteRecipe(id);
@@ -47,9 +54,13 @@ export default function AdminDashboard() {
         <h3>食材一覧</h3>
         <ul>
           {ingredients.map(ing => (
-            <li key={ing.id}>{ing.name}（{ing.type}）</li>
+            <li key={ing.id}>{ing.name}（{ing.type}）
+              <button onClick={() => handleDeleteIngredient(ing.id)} style={{ marginLeft: 8 }}>削除</button>
+            </li>
+            
           ))}
         </ul>
+
       </div>
       <div className={styles.section}>
         <h3>カテゴリ一覧</h3>

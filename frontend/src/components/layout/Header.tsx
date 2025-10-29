@@ -15,13 +15,12 @@ type HeaderSectionProps = {
 
 export default function Header(props: HeaderSectionProps) {
   return (
-    //左に現在表示しているセクション名、右にアプリ名を表示
-    <header className={styles.header}>
-      <div className={styles.left}>
+    <header className="flex justify-between items-center p-4 bg-orange-400 shadow-md">
+      <div className="font-bold text-2xl ml-2">
         {HEADER_SECTION.find((section) => section.key === props.nav)?.label}
       </div>
-      <div className={styles.right}>
-        <img src="/app_icon.png" alt="アプリアイコン" className={styles.icon} />
+      <div className="flex items-center cursor-pointer font-bold text-2xl mr-3"  onClick={() => props.setNav("home")}>
+        <img src="/app_icon.png" alt="アプリアイコン" className="w-11 h-11 mr-3" />
         
         <p>アプリ名</p>
       </div>

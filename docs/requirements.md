@@ -3,7 +3,7 @@
 ##
 
 技術スタック：
-フロントエンド： React(TypeScript)
+フロントエンド： React(TypeScript) Tailwind CSS
 バックエンド：　 FastAPI
 データベース：SQLite → 　途中で、他のデータベースへの移行を検討中
 バージョン管理 Github

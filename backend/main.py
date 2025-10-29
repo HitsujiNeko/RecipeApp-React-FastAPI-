@@ -122,8 +122,37 @@ def create_recipe(req: RecipeCreateRequest, session: Session = Depends(get_sessi
     session.refresh(recipe)
     return recipe
 
+# YouTube動画情報取得API
+@app.post("/api/youtube/video")
+def fetch_youtube_video(video_url: str = Body(..., embed=True)):
+    # 動画ID抽出
+    import re
+    match = re.search(r"v=([\w-]+)", video_url)
+    if not match:
+        return {"error": "Invalid YouTube URL"}
+    video_id = match.group(1)
+    # videos APIで動画情報取得
+    params = {
+        "part": "snippet",
+        "id": video_id,
+        "key": YOUTUBE_API_KEY,
+    }
+    r = requests.get("https://www.googleapis.com/youtube/v3/videos", params=params)
+    data = r.json()
+    items = data.get("items", [])
+    if not items:
+        return {"error": "Video not found"}
+    snippet = items[0]["snippet"]
+    result = {
+        "videoId": video_id,
+        "title": snippet["title"],
+        "description": snippet.get("description", ""),
+        "thumbnail": snippet["thumbnails"]["default"]["url"],
+        "url": f"https://www.youtube.com/watch?v={video_id}"
+    }
+    return result
 
-
+# YouTubeプレイリストから動画情報を取得
 @app.post("/api/youtube/playlist")
 def fetch_youtube_playlist(playlist_url: str = Body(..., embed=True)):
     # プレイリストID抽出

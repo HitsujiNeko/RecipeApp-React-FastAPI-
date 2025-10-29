@@ -1,4 +1,4 @@
-import { IngredientModel, CategoryModel, RecipeModel } from "../types/models";
+import { IngredientModel, CategoryModel, RecipeModel ,RecipeCreateRequest} from "../types/models";
 
 // GET
 
@@ -42,6 +42,20 @@ export async function fetchRecipeDetail(id: number): Promise<RecipeModel> {
   if (!res.ok) throw new Error("レシピ詳細の取得に失敗しました");
   return await res.json();
 }
+
+// YouTube動画から動画情報を取得
+export async function fetchYoutubeVideo(
+  videoUrl: string
+): Promise<any> { {
+  const res = await fetch("http://localhost:8000/api/youtube/video", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ video_url: videoUrl }),
+  });
+  if (!res.ok) throw new Error("動画情報の取得に失敗しました");
+  return await res.json();
+}}
+
 // YouTubeプレイリストから動画情報を取得
 export async function fetchYoutubePlaylist(
   playlistUrl: string
@@ -85,8 +99,20 @@ export async function addCategory(
 }
 
 
+// 単体追加
+export async function addRecipe(recipe: RecipeCreateRequest): Promise<any> {
+  const res = await fetch("http://localhost:8000/api/recipes", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(recipe),
+  });
+  if (!res.ok) throw new Error("登録に失敗しました");
+  return await res.json();
+}
+
+
 // レシピ一括追加
-export async function bulkAddRecipes(recipes: any[]): Promise<any> {
+export async function bulkAddRecipes(recipes: RecipeCreateRequest[]): Promise<any> {
   const res = await fetch("http://localhost:8000/api/recipes/bulk", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

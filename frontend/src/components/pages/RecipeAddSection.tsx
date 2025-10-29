@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import IngredientSearch from "../common/IngredientSearch";
 import CategorySelect from "../common/CategorySelect";
-import ThumbnailInput from "../feature/recipeAdd/ThumnailInput";
-import { fetchYoutubePlaylist, fetchIngredients } from "../../api/api";
+import ThumbnailInput from "../feature/recipeAdd/ThumbnailInput";
+import { fetchYoutubeVideo, fetchYoutubePlaylist, fetchIngredients, addRecipe} from "../../api/api";
 import PlaylistBulkAdd from "../feature/recipeAdd/PlaylistBulkAdd";
 
 export default function RecipeAddSection() {
@@ -15,12 +15,17 @@ export default function RecipeAddSection() {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // YouTube説明文から食材自動抽出
+  // YouTube説明文から食材を自動抽出＆タイトル自動入力  
   useEffect(() => {
     if (!youtubeUrl) return;
-    const fetchDescAndExtract = async () => {
+    const fetchDeta = async () => {
       try {
-        const data = await fetchYoutubePlaylist(youtubeUrl);
+        let data;
+        if (youtubeUrl.includes("list=")) {
+          data = await fetchYoutubePlaylist(youtubeUrl);
+        } else {
+          data = [await fetchYoutubeVideo(youtubeUrl)];
+        }
         if (Array.isArray(data) && data.length > 0 && data[0].description) {
           // 食材一覧取得
           let allIngredients = ingredients;
@@ -36,12 +41,17 @@ export default function RecipeAddSection() {
             if (desc && re.test(desc)) ids.push(ing.id);
           }
           setIngredientIds(ids);
+          // タイトルからレシピ名自動入力
+          setName(data[0].title || "");
+          console.log("タイトルからレシピ名を自動入力しました:", data[0].title);
         }
       } catch (e) {
         // 何もしない
+        console.error("YouTube説明文の取得に失敗しました", e);
       }
     };
-    fetchDescAndExtract();
+    fetchDeta();
+    console.log("YouTube URL変更を検知:", youtubeUrl);
     // eslint-disable-next-line
   }, [youtubeUrl]);
 
@@ -49,20 +59,16 @@ export default function RecipeAddSection() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/api/recipes", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          url: youtubeUrl,
-          thumbnail: thumbnailUrl,
-          notes,
-          ingredient_ids: ingredientIds,
-          category_id: categoryId,
-        }),
+      await addRecipe({
+        name,
+        url: youtubeUrl,
+        thumbnail: thumbnailUrl,
+        notes,
+        ingredient_ids: ingredientIds,
+        category_id: categoryId,
       });
-      if (!res.ok) throw new Error("登録に失敗しました");
       alert("レシピを追加しました");
+      // フォームリセット
       setName("");
       setYoutubeUrl("");
       setThumbnailUrl("");
@@ -78,7 +84,7 @@ export default function RecipeAddSection() {
   return (
     <section>
       <details>
-        <summary>YouTubeプレイリスト一括追加</summary>
+        <summary>YouTubeプレイリスト一括追加（現在開発中）</summary>
         <PlaylistBulkAdd />
         <p>
           再生リストのURLをコピペして、一括で登録することもできます。
@@ -91,7 +97,7 @@ export default function RecipeAddSection() {
       </details>
       <form
         onSubmit={handleSubmit}
-        className="bg-orange-100 p-4 rounded-lg border-2 common-border-orange outline-none mt-4 mb-8 max-w-lg"
+        className="bg-orange-100 p-4 rounded-lg border-2 border-orange-400 outline-none mt-4 mb-8 max-w-lg"
       >
         <div>
           <label className="block font-bold mb-2">
@@ -102,7 +108,8 @@ export default function RecipeAddSection() {
               value={youtubeUrl}
               onChange={(e) => setYoutubeUrl(e.target.value)}
               required
-              className="bg-white rounded-md w-full mt-1 p-2 common-border-orange outline-none"
+              className="bg-white rounded-md w-full mt-1 p-2 common-border-orange outline-none text-sm"
+              placeholder="URLをコピーするとサムネイルとレシピ名は自動で入るよ"
             />
           </label>
         </div>
@@ -126,7 +133,7 @@ export default function RecipeAddSection() {
           selectedIds={ingredientIds}
           onChange={setIngredientIds}
         />
-        <CategorySelect value={categoryId} onChange={setCategoryId} />
+        <CategorySelect value={categoryId} onChange={setCategoryId} enableSelectAll={false} />
         <div>
           <label className="block font-bold mb-2 mt-2">
             メモ
