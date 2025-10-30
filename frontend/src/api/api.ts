@@ -1,4 +1,11 @@
-import { IngredientModel, CategoryModel, RecipeModel ,RecipeCreateRequest} from "../types/models";
+import {
+  IngredientModel,
+  CategoryModel,
+  YouTubeChannelModel,
+  RecipeTagModel,
+  RecipeModel,
+  RecipeCreateRequest,
+} from "../types/models";
 
 // GET
 
@@ -13,6 +20,18 @@ export async function fetchIngredients(): Promise<IngredientModel[]> {
 export async function fetchCategories(): Promise<CategoryModel[]> {
   const res = await fetch("http://localhost:8000/api/categories");
   if (!res.ok) throw new Error("カテゴリ一覧の取得に失敗しました");
+  return await res.json();
+}
+// チャンネル一覧を取得
+export async function fetchYouTubeChannels(): Promise<YouTubeChannelModel[]> {
+  const res = await fetch("http://localhost:8000/api/youtube_channels");
+  if (!res.ok) throw new Error("チャンネル一覧の取得に失敗しました");
+  return await res.json();
+}
+// タグ一覧を取得
+export async function fetchRecipeTags(): Promise<RecipeTagModel[]> {
+  const res = await fetch("http://localhost:8000/api/recipe_tags");
+  if (!res.ok) throw new Error("タグ一覧の取得に失敗しました");
   return await res.json();
 }
 
@@ -44,17 +63,17 @@ export async function fetchRecipeDetail(id: number): Promise<RecipeModel> {
 }
 
 // YouTube動画から動画情報を取得
-export async function fetchYoutubeVideo(
-  videoUrl: string
-): Promise<any> { {
-  const res = await fetch("http://localhost:8000/api/youtube/video", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ video_url: videoUrl }),
-  });
-  if (!res.ok) throw new Error("動画情報の取得に失敗しました");
-  return await res.json();
-}}
+export async function fetchYoutubeVideo(videoUrl: string): Promise<any> {
+  {
+    const res = await fetch("http://localhost:8000/api/youtube/video", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ video_url: videoUrl }),
+    });
+    if (!res.ok) throw new Error("動画情報の取得に失敗しました");
+    return await res.json();
+  }
+}
 
 // YouTubeプレイリストから動画情報を取得
 export async function fetchYoutubePlaylist(
@@ -69,9 +88,9 @@ export async function fetchYoutubePlaylist(
   return await res.json();
 }
 
-// 
+//
 // POST
-// 
+//
 
 // 食材追加
 export async function addIngredient(
@@ -98,7 +117,6 @@ export async function addCategory(
   return await res.json();
 }
 
-
 // 単体追加
 export async function addRecipe(recipe: RecipeCreateRequest): Promise<any> {
   const res = await fetch("http://localhost:8000/api/recipes", {
@@ -110,9 +128,10 @@ export async function addRecipe(recipe: RecipeCreateRequest): Promise<any> {
   return await res.json();
 }
 
-
 // レシピ一括追加
-export async function bulkAddRecipes(recipes: RecipeCreateRequest[]): Promise<any> {
+export async function bulkAddRecipes(
+  recipes: RecipeCreateRequest[]
+): Promise<any> {
   const res = await fetch("http://localhost:8000/api/recipes/bulk", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -122,11 +141,9 @@ export async function bulkAddRecipes(recipes: RecipeCreateRequest[]): Promise<an
   return await res.json();
 }
 
-
-
-// 
+//
 // PUT
-// 
+//
 
 // 食材編集
 export async function updateIngredient(
@@ -170,9 +187,9 @@ export async function updateRecipe(
   return await res.json();
 }
 
-// 
+//
 // DELETE
-// 
+//
 
 // 食材削除
 export async function deleteIngredient(id: number): Promise<void> {
@@ -189,8 +206,6 @@ export async function deleteCategory(id: number): Promise<void> {
   });
   if (!res.ok) throw new Error("カテゴリ削除に失敗しました");
 }
-
-
 
 // レシピ削除
 export async function deleteRecipe(id: number): Promise<void> {

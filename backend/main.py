@@ -6,7 +6,7 @@ from sqlalchemy import and_, or_
 import os
 import requests
 from dotenv import load_dotenv
-from models import Ingredient, Category, Recipe
+from models import Ingredient, Category, RecipeTag, YouTubeChannel,Recipe
 from database import create_db, get_session
 from typing import List, Optional
 from pydantic import BaseModel
@@ -54,6 +54,16 @@ def read_categories(session: Session = Depends(get_session)):
     categories = session.exec(select(Category)).all()
     return categories
 
+@app.get("/api/recipe_tags")
+def read_recipe_tags(session: Session = Depends(get_session)):
+    tags = session.exec(select(RecipeTag)).all()
+    return tags
+
+@app.get("/api/youtube_channels")
+def read_youtube_channels(session: Session = Depends(get_session)):
+    channels = session.exec(select(YouTubeChannel)).all()
+    return channels
+
 @app.get("/api/recipes")
 def read_recipes(
     ingredients: Optional[str] = None,
@@ -79,6 +89,8 @@ def read_recipes(
         data = jsonable_encoder(recipe)
         data["ingredients"] = [jsonable_encoder(ing) for ing in recipe.ingredients] if recipe.ingredients else []
         data["category"] = jsonable_encoder(recipe.category) if recipe.category else None
+        data["youtube_channel"] = jsonable_encoder(recipe.youtube_channel) if recipe.youtube_channel else None
+        data["tags"] = [jsonable_encoder(tag) for tag in recipe.tags] if recipe.tags else []
         result.append(data)
     return result
 
@@ -92,6 +104,8 @@ def read_recipe_detail(recipe_id: int, session: Session = Depends(get_session)):
     # ingredients, categoryを明示的に追加
     data["ingredients"] = [jsonable_encoder(ing) for ing in recipe.ingredients] if recipe.ingredients else []
     data["category"] = jsonable_encoder(recipe.category) if recipe.category else None
+    data["youtube_channel"] = jsonable_encoder(recipe.youtube_channel) if recipe.youtube_channel else None
+    data["tags"] = [jsonable_encoder(tag) for tag in recipe.tags] if recipe.tags else []
     return data
 
 ## Create (新規作成) POSTメソッド
@@ -103,6 +117,8 @@ class RecipeCreateRequest(BaseModel):
     notes: Optional[str] = None
     ingredient_ids: List[int]
     category_id: Optional[int] = None
+    youtube_channel_id: Optional[int] = None
+    tags: List[int] = []
 
 @app.post("/api/recipes")
 def create_recipe(req: RecipeCreateRequest, session: Session = Depends(get_session)):
@@ -112,6 +128,8 @@ def create_recipe(req: RecipeCreateRequest, session: Session = Depends(get_sessi
         thumbnail=req.thumbnail,
         notes=req.notes,
         category_id=req.category_id,
+        youtube_channel_id=req.youtube_channel_id,
+        tags=req.tags,
     )
     # 食材の関連付け
     if req.ingredient_ids:
@@ -175,7 +193,6 @@ def fetch_youtube_playlist(playlist_url: str = Body(..., embed=True)):
             params["pageToken"] = nextPageToken
         r = requests.get("https://www.googleapis.com/youtube/v3/playlistItems", params=params)
         data = r.json()
-        print(data)  # ← ここを追加
         items.extend(data.get("items", []))
         nextPageToken = data.get("nextPageToken")
         if not nextPageToken:
@@ -200,6 +217,8 @@ class RecipeBulkCreateRequest(BaseModel):
     notes: Optional[str] = None
     ingredient_ids: List[int]
     category_id: Optional[int] = None
+    youtube_channel_id: Optional[int] = None
+    tags: List[int] = []
 
 @app.post("/api/recipes/bulk")
 def bulk_add_recipes(recipes: List[RecipeBulkCreateRequest], session: Session = Depends(get_session)):
@@ -210,6 +229,8 @@ def bulk_add_recipes(recipes: List[RecipeBulkCreateRequest], session: Session = 
             thumbnail=req.thumbnail,
             notes=req.notes,
             category_id=req.category_id,
+            youtube_channel_id=req.youtube_channel_id,
+            tags=req.tags,
         )
         if req.ingredient_ids:
             ingredients = session.exec(select(Ingredient)).all()
@@ -241,7 +262,33 @@ def update_category(category_id: int, updated: Category, session: Session = Depe
     session.add(category)
     session.commit()
     session.refresh(category)
-    return category 
+    return category
+
+@app.put("/api/youtube_channels/{youtube_channel_id}")
+def update_youtube_channel(youtube_channel_id: int, updated: YouTubeChannel, session
+    : Session = Depends(get_session)):
+    channel = session.get(YouTubeChannel, youtube_channel_id)
+    if not channel:
+        raise HTTPException(status_code=404, detail="YouTubeチャンネルが見つかりません")
+    for field, value in updated.model_dump(exclude_unset=True).items():
+        setattr(channel, field, value)
+    session.add(channel)
+    session.commit()
+    session.refresh(channel)
+    return channel
+
+@app.put("/api/recipe_tags/{recipe_tag_id}")
+def update_recipe_tag(recipe_tag_id: int, updated: RecipeTag, session: Session =
+    Depends(get_session)):
+    tag = session.get(RecipeTag, recipe_tag_id)
+    if not tag:
+        raise HTTPException(status_code=404, detail="タグが見つかりません")
+    for field, value in updated.model_dump(exclude_unset=True).items():
+        setattr(tag, field, value)
+    session.add(tag)
+    session.commit()
+    session.refresh(tag)
+    return tag
 
 @app.put("/api/recipes/{recipe_id}")
 def update_recipe(recipe_id: int, updated: Recipe, session: Session = Depends(get_session)):
@@ -271,6 +318,24 @@ def delete_category(category_id: int, session: Session = Depends(get_session)):
     if not category:
         raise HTTPException(status_code=404, detail="カテゴリーが見つかりません")
     session.delete(category)
+    session.commit()
+    return {"ok": True}
+
+@app.delete("/api/youtube_channels/{youtube_channel_id}")
+def delete_youtube_channel(youtube_channel_id: int, session: Session = Depends(get_session)):
+    channel = session.get(YouTubeChannel, youtube_channel_id)
+    if not channel:
+        raise HTTPException(status_code=404, detail="YouTubeチャンネルが見つかりません")
+    session.delete(channel)
+    session.commit()
+    return {"ok": True}
+
+@app.delete("/api/recipe_tags/{recipe_tag_id}")
+def delete_recipe_tag(recipe_tag_id: int, session: Session = Depends(get_session)):
+    tag = session.get(RecipeTag, recipe_tag_id)
+    if not tag:
+        raise HTTPException(status_code=404, detail="タグが見つかりません")
+    session.delete(tag)
     session.commit()
     return {"ok": True}
 

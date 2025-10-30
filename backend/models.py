@@ -7,6 +7,10 @@ class RecipeIngredientLink(SQLModel, table=True):
     recipe_id: int = Field(default=None, foreign_key="recipe.id", primary_key=True)
     ingredient_id: int = Field(default=None, foreign_key="ingredient.id", primary_key=True)
 
+class RecipeTagLink(SQLModel, table=True):
+    recipe_id: int = Field(default=None, foreign_key="recipe.id", primary_key=True)
+    tag_id: int = Field(default=None, foreign_key="recipetag.id", primary_key=True)
+
 
 # 個別のテーブル
 class Ingredient(SQLModel, table=True):
@@ -14,15 +18,23 @@ class Ingredient(SQLModel, table=True):
     name: str
     reading: str = Field(max_length=20, description="食材の読み")
     type: str
-
     recipes: List["Recipe"] = Relationship(back_populates="ingredients", link_model=RecipeIngredientLink) # 多対多の関係
 
 class Category(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     name: str
-
     recipes: List["Recipe"] = Relationship(back_populates="category") # 1対多の関係
 
+class RecipeTag(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    name: str
+
+class YouTubeChannel(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    name: str
+    url: str
+    thumbnail: str = Field(max_length=255, unique=True, description="チャンネルサムネイルのURL")
+    recipes: List["Recipe"] = Relationship(back_populates="youtube_channel")  # 1対多の関係
 
 class Recipe(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
@@ -35,7 +47,12 @@ class Recipe(SQLModel, table=True):
     ingredients: List[Ingredient] = Relationship(back_populates="recipes",link_model=RecipeIngredientLink) # 多対多の関係
 
     category_id: Optional[int]= Field(default=None, foreign_key="category.id")
-    category: Optional[Category] = Relationship(back_populates="recipes")  # 多対1の関係]
+    category: Optional[Category] = Relationship(back_populates="recipes")  # 多対1の関係
+
+    tags: List[RecipeTag] = Relationship(back_populates="recipes", link_model=RecipeTagLink)  # 多対多の関係
+
+    youtube_channel_id: Optional[int] = Field(default=None, foreign_key="youtubechannel.id")
+    youtube_channel: Optional[YouTubeChannel] = Relationship(back_populates="recipes")  # 多対1の関係
 
 
 

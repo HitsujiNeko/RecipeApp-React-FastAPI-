@@ -12,6 +12,19 @@ export type CategoryModel = {
   name: string;
 };
 
+// チャンネル
+export type YouTubeChannelModel = {
+  id: number;
+  name: string;
+  url: string;
+  thumbnail: string;
+};
+// タグ
+export type RecipeTagModel = {
+  id: number;
+  name: string;
+};
+
 // レシピ
 export type RecipeModel = {
   id: number;

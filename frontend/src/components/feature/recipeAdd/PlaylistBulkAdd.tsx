@@ -8,8 +8,6 @@ import {
 import { IngredientModel, CategoryModel } from "../../../types/models";
 import IngredientSearch from "../../common/IngredientSearch";
 
-
-
 export default function PlaylistBulkAdd() {
   const [playlistUrl, setPlaylistUrl] = useState("");
   const [videos, setVideos] = useState<any[]>([]);
@@ -97,22 +95,6 @@ export default function PlaylistBulkAdd() {
   const handleRowChange = (i: number, key: string, value: any) => {
     setRows((prev) =>
       prev.map((row, idx) => (idx === i ? { ...row, [key]: value } : row))
-    );
-  };
-
-  // 食材選択トグル
-  const toggleIngredient = (i: number, ingId: number) => {
-    setRows((prev) =>
-      prev.map((row, idx) =>
-        idx === i
-          ? {
-              ...row,
-              ingredientIds: row.ingredientIds.includes(ingId)
-                ? row.ingredientIds.filter((id: number) => id !== ingId)
-                : [...row.ingredientIds, ingId],
-            }
-          : row
-      )
     );
   };
 
@@ -258,5 +240,4 @@ export default function PlaylistBulkAdd() {
       </div>
     </section>
   );
-};
-
+}
