@@ -64,7 +64,6 @@ export async function fetchRecipeDetail(id: number): Promise<RecipeModel> {
 
 // YouTube動画から動画情報を取得
 export async function fetchYoutubeVideo(videoUrl: string): Promise<any> {
-  {
     const res = await fetch("http://localhost:8000/api/youtube/video", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -72,7 +71,6 @@ export async function fetchYoutubeVideo(videoUrl: string): Promise<any> {
     });
     if (!res.ok) throw new Error("動画情報の取得に失敗しました");
     return await res.json();
-  }
 }
 
 // YouTubeプレイリストから動画情報を取得

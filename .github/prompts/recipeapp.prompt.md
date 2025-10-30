@@ -1,11 +1,44 @@
 ---
 mode: agent
 ---
+# リポジトリのURL
+https://github.com/HitsujiNeko/RecipeApp-React-FastAPI-
 
 # 現在の開発状況＆方針
 
 - レシピにタグ付け＆YouTube チャンネル紐づけ機能を追加する
 - API 設計、ER 図、要件定義を更新済み
+- 11/4までにポートフォリオとして公開できる状態にすることを目標（現在10/31）
+
+# 公開方法
+
+## 使用するDB
+- **PostgreSQL（クラウドDB）**
+  - Supabase（無料枠）
+
+## 使用するサービス
+- **バックエンド（FastAPI）**: Render（無料枠あり）またはRailway/Supabase Functions
+- **フロントエンド（React）**: Vercel（無料枠あり）またはNetlify
+- **DB**: Supabase PostgreSQL（無料枠）
+
+## 公開までの流れ
+1. **SupabaseでPostgreSQLインスタンスを作成**
+  - サインアップし、プロジェクトを作成。DB接続情報を取得
+2. **FastAPIのDB接続設定をPostgreSQL用に変更**
+  - `.env`や`alembic.ini`のDB URLをSupabaseのものに書き換え
+3. **Alembicでマイグレーションを実行**
+  - `alembic upgrade head`でDBスキーマを反映　
+
+現在、ここまで完了済み
+
+4. **バックエンド（FastAPI）をRender等にデプロイ**
+  - GitHub連携で自動デプロイ可。環境変数でDB URLを設定
+5. **フロントエンド（React）をVercel等にデプロイ**
+  - GitHub連携で自動デプロイ可。APIエンドポイントをRenderのURLに合わせる
+6. **動作確認・データ投入**
+  - 必要に応じてseed_data.pyで初期データ投入
+
+※全て無料枠で運用可能（アクセス数・容量に制限あり）
 
 # アプリ概要
 

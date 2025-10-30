@@ -1,5 +1,5 @@
 from sqlmodel import Session, SQLModel, create_engine
-from models import Ingredient, Category, Recipe
+from models import Ingredient, Category, RecipeTag
 from database import engine
 
 
@@ -13,20 +13,17 @@ ingredients_data = [
         {"name": "牛肩ロース", "reading": "ぎゅうかたろーす", "type": "肉"},
         {"name": "牛もも肉", "reading": "ぎゅうももにく", "type": "肉"},
         {"name": "牛ひき肉", "reading": "ぎゅうひきにく", "type": "肉"},
-        {"name": "合いびき肉", "reading": "あいびきにく", "type": "肉"},
         {"name": "鶏ひき肉", "reading": "とりひきにく", "type": "肉"},
         {"name": "鶏ささみ", "reading": "とりささみ", "type": "肉"},
         {"name": "鶏手羽先", "reading": "とりてばさき", "type": "肉"},
         {"name": "鶏手羽元", "reading": "とりてばもと", "type": "肉"},
         {"name": "鶏レバー", "reading": "とりればー", "type": "肉"},
-        {"name": "豚こま切れ肉", "reading": "ぶたこまぎれにく", "type": "肉"},
+        {"name": "豚こま肉", "reading": "ぶたこまにく", "type": "肉"},
         {"name": "豚ひき肉", "reading": "ぶたひきにく", "type": "肉"},
         {"name": "牛タン", "reading": "ぎゅうたん", "type": "肉"},
-        {"name": "ラム肉", "reading": "らむにく", "type": "肉"},
         {"name": "ベーコン", "reading": "べーこん", "type": "肉"},
         {"name": "ウインナー", "reading": "ういんなー", "type": "肉"},
         {"name": "ハム", "reading": "はむ", "type": "肉"},
-        {"name": "サラダチキン", "reading": "さらだちきん", "type": "肉"},
         {"name": "ツナ缶", "reading": "つなかん", "type": "魚"},
         {"name": "鮭", "reading": "さけ", "type": "魚"},
         {"name": "鯖", "reading": "さば", "type": "魚"},
@@ -100,7 +97,6 @@ ingredients_data = [
         {"name": "マッシュルーム", "reading": "まっしゅるーむ", "type": "きのこ"},
         {"name": "エリンギ", "reading": "えりんぎ", "type": "きのこ"},
         {"name": "卵", "reading": "たまご", "type": "卵"},
-        {"name": "うずら卵", "reading": "うずらたまご", "type": "卵"},
         {"name": "パスタ", "reading": "ぱすた", "type": "炭水化物"},
         {"name": "うどん", "reading": "うどん", "type": "炭水化物"},
         {"name": "そば", "reading": "そば", "type": "炭水化物"},
@@ -110,19 +106,10 @@ ingredients_data = [
         {"name": "米", "reading": "こめ", "type": "炭水化物"},
         {"name": "もち米", "reading": "もちごめ", "type": "炭水化物"},
         {"name": "パン", "reading": "ぱん", "type": "炭水化物"},
-        {"name": "食パン", "reading": "しょくぱん", "type": "炭水化物"},
         {"name": "ピザ生地", "reading": "ぴざきじ", "type": "炭水化物"},
         {"name": "お餅", "reading": "おもち", "type": "炭水化物"},
         {"name": "春雨", "reading": "はるさめ", "type": "炭水化物"},
 ]
-
-
-def create_ingredients():
-    with Session(engine) as session:
-        for ingredient in ingredients_data:
-            db_ingredient = Ingredient(**ingredient)
-            session.add(db_ingredient)
-        session.commit()
 
 
 category_data = [
@@ -133,6 +120,22 @@ category_data = [
     {"name": "お菓子"},
 ]
 
+recipe_tag_data = [
+    {"name": "お気に入り"},
+    {"name": "ヘルシー"},
+    {"name": "お弁当"},
+    {"name": "時短"},
+    {"name": "節約"},
+    {"name": "複数レシピ"},
+]
+
+def create_ingredients():
+    with Session(engine) as session:
+        for ingredient in ingredients_data:
+            db_ingredient = Ingredient(**ingredient)
+            session.add(db_ingredient)
+        session.commit()
+
 def create_categories():
     with Session(engine) as session:
         for category in category_data:
@@ -140,7 +143,15 @@ def create_categories():
             session.add(db_category)
         session.commit()
 
+def create_recipe_tags():
+    with Session(engine) as session:
+        for tag in recipe_tag_data:
+            db_tag = RecipeTag(**tag)
+            session.add(db_tag)
+        session.commit()
+
 if __name__ == "__main__":
     create_ingredients()
     create_categories()
+    create_recipe_tags()
 

@@ -28,6 +28,7 @@ class Category(SQLModel, table=True):
 class RecipeTag(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     name: str
+    recipes: List["Recipe"] = Relationship(back_populates="tags", link_model=RecipeTagLink)  # 多対多の関係
 
 class YouTubeChannel(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
