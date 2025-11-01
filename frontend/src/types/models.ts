@@ -34,6 +34,8 @@ export type RecipeModel = {
   notes: string;
   ingredients: IngredientModel[]; // 詳細取得時
   category: CategoryModel; // 詳細取得時
+  tags?: RecipeTagModel[]; // 追加: タグ一覧
+  channelIcon?: string; // 追加: チャンネルアイコンURL
   created_at?: string; // オプション: 日時
 };
 

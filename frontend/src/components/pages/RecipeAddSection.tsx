@@ -1,23 +1,52 @@
 import React, { useState, useEffect } from "react";
+import { 
+  fetchIngredients,
+  fetchCategories, 
+  fetchYoutubeVideo, 
+  fetchYoutubePlaylist, 
+  fetchRecipeTags,
+  addRecipe, 
+  } from "../../api/api";
+import PlaylistBulkAdd from "../feature/recipeAdd/PlaylistBulkAdd";
 import IngredientSearch from "../common/IngredientSearch";
 import CategorySelect from "../common/CategorySelect";
+import TagSelect from "../common/TagSelect";
 import ThumbnailInput from "../feature/recipeAdd/ThumbnailInput";
-import { fetchYoutubeVideo, fetchYoutubePlaylist, fetchIngredients, addRecipe} from "../../api/api";
-import PlaylistBulkAdd from "../feature/recipeAdd/PlaylistBulkAdd";
+import { RecipeTagModel } from "../../types/models";
 
 export default function RecipeAddSection() {
   const [categoryId, setCategoryId] = useState<number | null>(null);
+  const [categories, setCategories] = useState<any[]>([]);
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [ingredientIds, setIngredientIds] = useState<number[]>([]);
   const [ingredients, setIngredients] = useState<any[]>([]);
   const [notes, setNotes] = useState("");
   const [name, setName] = useState("");
+  const [tagSelectOpen, setTagSelectOpen] = useState(false);
+  const [tags, setTags] = useState<RecipeTagModel[]>([]);
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]);
+
+  const [channelIcon, setChannelIcon] = useState("");
   const [loading, setLoading] = useState(false);
+  
+  // 初期データ（食材、カテゴリ、タグ一覧を取得
+  useEffect(() => {
+    Promise.all([fetchIngredients(), fetchCategories(),fetchRecipeTags()])
+      .then(([ingredientsData, categoriesData, tagsData]) => {
+        setIngredients(ingredientsData);
+        setCategories(categoriesData);
+        setTags(tagsData);
+      })
+      .catch((err) => {
+        console.error("初期データの取得に失敗しました", err);
+      });
+  }, []);
 
   // YouTube説明文から食材を自動抽出＆タイトル自動入力  
   useEffect(() => {
     if (!youtubeUrl) return;
+    if (ingredients.length === 0) return;
     const fetchDeta = async () => {
       try {
         let data;
@@ -25,25 +54,21 @@ export default function RecipeAddSection() {
           data = await fetchYoutubePlaylist(youtubeUrl);
         } else {
           data = [await fetchYoutubeVideo(youtubeUrl)];
+          console.log('data:',data);
         }
         if (Array.isArray(data) && data.length > 0 && data[0].description) {
-          // 食材一覧取得
-          let allIngredients = ingredients;
-          if (ingredients.length === 0) {
-            allIngredients = await fetchIngredients();
-            setIngredients(allIngredients);
-          }
           const desc = data[0].description;
           // 説明文から食材ID抽出
           const ids: number[] = [];
-          for (const ing of allIngredients) {
+          for (const ing of ingredients) {
             const re = new RegExp(ing.name + "|" + ing.reading, "g");
             if (desc && re.test(desc)) ids.push(ing.id);
           }
           setIngredientIds(ids);
           // タイトルからレシピ名自動入力
           setName(data[0].title || "");
-          console.log("タイトルからレシピ名を自動入力しました:", data[0].title);
+          // チャンネルアイコン設定
+          setChannelIcon(data[0].channelIcon || "");
         }
       } catch (e) {
         // 何もしない
@@ -51,8 +76,6 @@ export default function RecipeAddSection() {
       }
     };
     fetchDeta();
-    console.log("YouTube URL変更を検知:", youtubeUrl);
-    // eslint-disable-next-line
   }, [youtubeUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -85,7 +108,7 @@ export default function RecipeAddSection() {
     <section>
       <details>
         <summary>YouTubeプレイリスト一括追加（現在開発中）</summary>
-        <PlaylistBulkAdd />
+        <PlaylistBulkAdd ingredients={ingredients} categories={categories} />
         <p>
           再生リストのURLをコピペして、一括で登録することもできます。
           <br />
@@ -132,8 +155,30 @@ export default function RecipeAddSection() {
         <IngredientSearch
           selectedIds={ingredientIds}
           onChange={setIngredientIds}
+          ingredients={ingredients}
         />
-        <CategorySelect value={categoryId} onChange={setCategoryId} enableSelectAll={false} />
+        <CategorySelect
+          value={categoryId}
+          onChange={setCategoryId}
+          categories={categories}
+          enableSelectAll={false}
+        />
+        <button type="button" onClick={() => setTagSelectOpen(true)}>
+          タグを選択
+        </button>
+        <TagSelect
+          open={tagSelectOpen}
+          tags ={tags}
+          selectedTagIds={selectedTagIds}
+          onToggle={(id) => {
+            setSelectedTagIds((prev) => 
+              prev.includes(id)
+                ? prev.filter((tagId) => tagId !== id)
+                : [...prev, id]
+            );
+          }}
+          onClose={() => setTagSelectOpen(false)}
+          />
         <div>
           <label className="block font-bold mb-2 mt-2">
             メモ

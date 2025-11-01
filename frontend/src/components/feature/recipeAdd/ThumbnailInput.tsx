@@ -53,7 +53,7 @@ export default function ThumbnailInput({ youtubeUrl, onChange }: ThumbnailInputP
               <img
                 src={thumbnailUrl}
                 alt="サムネイル"
-                className="w-44 h-auto rounded-lg border border-gray-200 object-cover bg-gray-50 shadow"
+                className="w-56 h-auto rounded-lg border border-gray-200 object-cover bg-gray-50 shadow"
               />
             </div>
           ) : (
@@ -64,7 +64,7 @@ export default function ThumbnailInput({ youtubeUrl, onChange }: ThumbnailInputP
               <img
                 src="/no-thumbnail.jpg"
                 alt="ダミーサムネイル"
-                className="w-44 h-auto rounded-lg border border-dashed border-gray-300 object-cover bg-gray-100"
+                className="w-56 aspect-video rounded-lg border border-dashed border-gray-300 object-cover bg-gray-100"
               />
             </div>
           )}

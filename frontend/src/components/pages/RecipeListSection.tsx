@@ -1,5 +1,4 @@
-import React, { use, useEffect, useState } from "react";
-import styles from "./RecipeListSection.module.css";
+import React, { useEffect, useState } from "react";
 import { fetchRecipes, fetchCategories, deleteRecipe } from "../../api/api";
 import { RecipeModel, CategoryModel } from "../../types/models";
 import RecipeCard from "../common/RecipeCard";  
@@ -34,8 +33,8 @@ export default function RecipeListSection({onRecipeClick}: {onRecipeClick: (id: 
         <div>レシピが登録されていません</div>
       ) : (
         <div>
-          <p>レシピ数：{recipes.length}</p>
-          <div className={styles.grid}>
+          <p className="mb-2">レシピ数：{recipes.length} 件</p>
+          <div className="grid grid-cols-2  gap-4">
             {recipes.map((recipe) => (
               <RecipeCard 
                 key={recipe.id} 

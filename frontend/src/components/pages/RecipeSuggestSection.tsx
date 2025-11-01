@@ -1,8 +1,10 @@
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import styles from "./RecipeSuggestSection.module.css";
 import { fetchRecipes } from "../../api/api";
 import IngredientSearch from "../common/IngredientSearch";
+import { fetchIngredients } from "../../api/api";
 import CategorySelect from "../common/CategorySelect";
+import { fetchCategories } from "../../api/api";
 import RecipeCard from "../common/RecipeCard";
 import { RecipeModel } from "../../types/models";
 
@@ -16,6 +18,26 @@ export default function RecipeSuggestSection({
   const [recipes, setRecipes] = useState<RecipeModel[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const [categories, setCategories] = useState<any[]>([]);
+  const [ingredients, setIngredients] = useState<any[]>([]);
+  // 食材一覧を取得
+  React.useEffect(() => {
+    fetchIngredients()
+      .then((data) => setIngredients(data))
+      .catch((err) => {
+        console.error("食材一覧の取得に失敗しました", err);
+      });
+  }, []);
+
+  // カテゴリ一覧を取得
+  React.useEffect(() => {
+    fetchCategories()
+      .then((data) => setCategories(data))
+      .catch((err) => {
+        console.error("カテゴリ一覧の取得に失敗しました", err);
+      });
+  }, []);
 
   const resultsRef = useRef<HTMLDivElement>(null);
   const handleSearch = async () => {
@@ -43,11 +65,13 @@ export default function RecipeSuggestSection({
           <IngredientSearch
             selectedIds={selectedIngredients}
             onChange={setSelectedIngredients}
+            ingredients={ingredients}
           />
           <h2>カテゴリをえらぶ</h2>
           <CategorySelect
             value={selectedCategory}
             onChange={setSelectedCategory}
+            categories={categories}
           />
           <button
             className={styles.searchButton}

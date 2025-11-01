@@ -8,21 +8,19 @@ import {
 import { IngredientModel, CategoryModel } from "../../../types/models";
 import IngredientSearch from "../../common/IngredientSearch";
 
-export default function PlaylistBulkAdd() {
+// API取得は親コンポーネントで行い、propsで渡す形に変更する
+type PlaylistBulkAddProps = {
+  ingredients: IngredientModel[];
+  categories: CategoryModel[];
+};
+
+export default function PlaylistBulkAdd({ ingredients, categories }: PlaylistBulkAddProps) {
   const [playlistUrl, setPlaylistUrl] = useState("");
   const [videos, setVideos] = useState<any[]>([]);
   const [selected, setSelected] = useState<boolean[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [ingredients, setIngredients] = useState<IngredientModel[]>([]);
-  const [categories, setCategories] = useState<CategoryModel[]>([]);
   const [rows, setRows] = useState<any[]>([]); // 各動画の編集状態
-
-  // 食材・カテゴリ一覧を取得
-  useEffect(() => {
-    fetchIngredients().then(setIngredients);
-    fetchCategories().then(setCategories);
-  }, []);
 
   // 説明文から食材IDリストを抽出する関数
   function extractIngredientIds(desc: string): number[] {
@@ -189,6 +187,7 @@ export default function PlaylistBulkAdd() {
                         onChange={(ids) =>
                           handleRowChange(i, "ingredientIds", ids)
                         }
+                        ingredients={ingredients}
                       />
                     </td>
                     <td>

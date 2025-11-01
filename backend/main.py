@@ -145,10 +145,21 @@ def create_recipe(req: RecipeCreateRequest, session: Session = Depends(get_sessi
 def fetch_youtube_video(video_url: str = Body(..., embed=True)):
     # 動画ID抽出
     import re
-    match = re.search(r"v=([\w-]+)", video_url)
-    if not match:
+    # v=xxxx, youtu.be/xxxx, embed/xxxx, どの形式にも対応
+    patterns = [
+        r"youtu\.be/([\w-]+)",
+        r"v=([\w-]+)",
+        r"embed/([\w-]+)",
+        r"/v/([\w-]+)",
+    ]
+    video_id = None
+    for pat in patterns:
+        m = re.search(pat, video_url)
+        if m:
+            video_id = m.group(1)
+            break
+    if not video_id:
         return {"error": "Invalid YouTube URL"}
-    video_id = match.group(1)
     # videos APIで動画情報取得
     params = {
         "part": "snippet",

@@ -14,42 +14,32 @@
 //  APIは ../api/api.ts で定義済み
 import React, { useState, useEffect } from "react";
 import { IngredientModel } from "../../types/models";
-import { fetchIngredients } from "../../api/api";
 import IngredientTag from "./IngredientTag";
 import styles from "./IngredientSearch.module.css";
 
 interface IngredientSearchProps {
   selectedIds: number[];
   onChange: (ids: number[]) => void;
+  ingredients: IngredientModel[];
 }
+
 
 const IngredientSearch: React.FC<IngredientSearchProps> = ({
   selectedIds,
   onChange,
+  ingredients
 }) => {
-  const [allIngredients, setAllIngredients] = useState<IngredientModel[]>([]);
-  const [ingredients, setIngredients] = useState<IngredientModel[]>([]);
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    fetchIngredients()
-      .then((data) => {
-        setAllIngredients(data);
-        setIngredients(data);
-      })
-      .catch((err) => {
-        console.error("食材一覧の取得に失敗しました", err);
-      });
-  }, []);
+  // 検索フィルタリングはpropsのingredientsに対して行う
+  const filteredIngredients = ingredients.filter(
+    (ing) =>
+      ing.name.includes(search) ||
+      ing.reading.includes(search)
+  );
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearch(value);
-    setIngredients(
-      allIngredients.filter(
-        (ing) => ing.name.includes(value) || ing.reading.includes(value)
-      )
-    );
+    setSearch(e.target.value);
   };
 
   const handleToggle = (id: number) => {
@@ -69,19 +59,21 @@ const IngredientSearch: React.FC<IngredientSearchProps> = ({
         onChange={handleSearch}
         className="w-full p-2 mb-2 rounded-lg outline-none common-border-orange"
       />
-      <div className={styles.selected}>
-        <strong>選択中：</strong>
+      <div className="flex">
+        <strong className="">選択中：</strong>
+        <div className="flex">
         {selectedIds.length === 0
           ? "未選択"
-          : allIngredients
+          : ingredients
               .filter((ing) => selectedIds.includes(ing.id))
               .map((ing) => (
                 <IngredientTag key={ing.id} ingredient={ing} />
               ))}
+        </div>
       </div>
       <div className={styles.listArea}>
         <ul className={styles.list}>
-          {ingredients.map((ing) => (
+          {filteredIngredients.map((ing) => (
             <li key={ing.id} className={styles.listItem}>
               <label>
                 <input

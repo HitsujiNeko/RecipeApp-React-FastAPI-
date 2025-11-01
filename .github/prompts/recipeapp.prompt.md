@@ -10,6 +10,16 @@ https://github.com/HitsujiNeko/RecipeApp-React-FastAPI-
 - API 設計、ER 図、要件定義を更新済み
 - 11/4までにポートフォリオとして公開できる状態にすることを目標（現在10/31）
 
+レシピタグ
+recipe_tag_data = [
+    {"name": "お気に入り"},
+    {"name": "ヘルシー"},
+    {"name": "お弁当"},
+    {"name": "時短"},
+    {"name": "節約"},
+    {"name": "複数レシピ"},
+]
+
 # 公開方法
 
 ## 使用するDB
@@ -108,14 +118,11 @@ RecipeApp-React-FastAPI-/
 │ │ │ └── RecipeCard.tsx
 │ │ ├── feature/
 │ │ │ ├── recipeAdd/
-│ │ │ │ ├── PlaylistBulkAdd.module.css
 │ │ │ │ ├── PlaylistBulkAdd.tsx
 │ │ │ │ └── ThumnailInput.tsx
 │ │ │ └── recipeDetail/
 │ │ ├── layout/
-│ │ │ ├── BottomNavigationbar.module.css
 │ │ │ ├── BottomNavigationbar.tsx
-│ │ │ ├── Header.module.css
 │ │ │ └── Header.tsx
 │ │ └── pages/
 │ │ ├── HomeSection.tsx
@@ -164,3 +171,4 @@ ER 図は er_diagram.md に記載
 - 開発者は土木工学専攻で、情報系の専門的な知識に疎いが、Web 開発自体は 1 年経験ほどのレベルであるため、詳しい説明を心がける
 - スマホアプリの UI/UX を意識した提案を行う
 - 1 つのコンポーネントは多くても 200 行以内に収め、それを超える場合は分割を提案する
+- 現状、CSSファイルによるスタイリングが残っているが、提案時はすべて Tailwind CSS に置き換えることを前提とする

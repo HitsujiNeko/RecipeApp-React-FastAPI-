@@ -1,21 +1,28 @@
 import { RecipeModel } from "../../types/models";
 import IngredientTag from "./IngredientTag";
-import styles from "./RecipeCard.module.css";
-
-// export type Recipe = {
-//   id: number;
-//   name: string;
-//   url: string;
-//   thumbnail: string;
-//   notes: string;
-//   ingredients: Ingredient[]; // 詳細取得時
-//   categories: Category[];    // 詳細取得時
-//   created_at?: string;
-
+import RecipeTag from "./RecipeTag";
 interface RecipeCardProps {
   recipe: RecipeModel;
   displayIngCat?: boolean; // 追加: 食材リストを表示するかどうか
   onClick: () => void; 
+}
+// カテゴリごとに色分けするスタイル関数
+// 主菜：赤（ピンク）系、副菜：緑系、炭水化物：黄色系、デザート：水色系、スープ：オレンジ系、その他：灰色系
+function getCategoryStyle(categoryName: string) {
+  switch (categoryName) {
+    case "主菜":
+      return "bg-red-200 ";
+    case "副菜":
+      return "bg-green-200 ";
+    case "炭水化物":
+      return "bg-yellow-200 ";
+    case "デザート":
+      return "bg-blue-200 ";
+    case "スープ":
+      return "bg-orange-200 ";
+    default:
+      return "bg-gray-200 ";
+  }
 }
 
 export default function RecipeCard({
@@ -23,27 +30,43 @@ export default function RecipeCard({
   displayIngCat,
   onClick,
 }: RecipeCardProps) {
+
   return (
-    <div className={styles.card} onClick={onClick} style={{ cursor: "pointer" }}>
-      <p style={{ fontWeight: "bold", fontSize: "16px", marginBottom: "3px" }}>
-        {recipe.name.length > 23
-          ? recipe.name.slice(0, 23) + "..."
-          : recipe.name}
-      </p>
-      <a href={recipe.url} target="_blank" rel="noopener noreferrer">
-        <img src={recipe.thumbnail} alt={recipe.name} />
-      </a>
-      {displayIngCat && (
-        <>
-          <div className={styles.tags}>
-            {(recipe.ingredients || []).map((ing) => (
-              <IngredientTag ingredient={ing} />
-            ))}
+    <div 
+      className="bg-orange-50 border-2 border-orange-300 
+      rounded-xl shadow-md  w-full max-w-xs mx-auto transition hover:shadow-lg hover:border-orange-400 overflow-hidden"
+      onClick={onClick}
+    >
+      <div className=" items-center p-1">
+        <span className="font-bold text-xs leading-none line-clamp-2 pl-1">
+          {recipe.name}
+        </span>
+      </div>
+      <div className="flex justify-between items-center mb-1">
+        <a href={recipe.url} target="_blank" rel="noopener noreferrer" className="relative">
+          <img src={recipe.thumbnail} alt={recipe.name} className="w-full h-auto" />
+          <span 
+            className={`absolute top-1 left-1 text-xs px-2 py-0.5 rounded 
+              ${getCategoryStyle(recipe.category?.name)}`}>
+            {recipe.category?.name}
+          </span>
+          {/* レシピタグ */}
+          <div className="absolute top-1 right-1 flex flex-col gap-1 z-10">
+              {recipe.tags?.map(tag => ( 
+                <RecipeTag key={tag.id} recipeTag={tag} hideIcon />
+              ))
+                }
           </div>
-          <p className={styles.category}>
-            カテゴリ: {recipe.category ? recipe.category.name : ""}
-          </p>
-        </>
+          {/* TODO: Replace src with recipe.channelIcon when available */}
+          <img src="後で{recipe.channelIcon}に変更" alt="チャンネルアイコン" className="absolute right-1 bottom-1 w-8 h-8 rounded-full border-2 border-white shadow" />
+        </a>
+      </div>
+      {displayIngCat && (
+        <div className="flex flex-wrap gap-1 justify-center mb-1">
+          {(recipe.ingredients || []).map((ing) => (
+            <IngredientTag key={ing.id} ingredient={ing} />
+          ))}
+        </div>
       )}
     </div>
   );
