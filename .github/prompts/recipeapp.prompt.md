@@ -6,20 +6,25 @@ https://github.com/HitsujiNeko/RecipeApp-React-FastAPI-
 
 # 現在の開発状況＆方針
 
-- レシピにタグ付け＆YouTube チャンネル紐づけ機能を追加する
-- API 設計、ER 図、要件定義を更新済み
+- レシピ追加機能をフォームと親コンポーネントに分割する
+- 分割したフォームを用いてレシピ編集機能を追加する
+
+# 現在の開発状況＆方針
+
+- レシピ追加機能をフォームと親コンポーネントに分割する
+- 分割したフォームを用いてレシピ編集機能を追加する
 - 11/4までにポートフォリオとして公開できる状態にすることを目標（現在10/31）
 
-レシピタグ
-recipe_tag_data = [
-    {"name": "お気に入り"},
-    {"name": "ヘルシー"},
-    {"name": "お弁当"},
-    {"name": "時短"},
-    {"name": "節約"},
-    {"name": "複数レシピ"},
-]
+## 開発の具体的な方針（レシピ編集画面）
 
+- レシピ編集はレシピ詳細画面から遷移する想定
+- 編集画面は RecipeForm を流用し、初期値を既存レシピデータで埋める
+- バリデーションやYouTube URLの自動取得も追加画面と同様に行う
+frontend\src\utils\validation.ts, frontend\src\utils\youtubeData.ts に共通関数を実装済み
+- 既存レシピデータの取得は RecipeDetailSection で行い、編集画面に渡す
+
+
+---
 # 公開方法
 
 ## 使用するDB
@@ -63,33 +68,96 @@ RecipeApp-React-FastAPI- は、React（フロントエンド）と FastAPI（バ
 - ストーリー
   YouTube 上では動画で視聴できるというメリットがあり、私自身もよく利用している。日々新しい動画が更新される、登録者の多い人気 YouTuber のレシピ動画を見て料理を作ることが多い。しかし、動画を一つ一つ保存したり、後で見返すのが面倒であるため、レシピを一元管理できるアプリが欲しいと感じた。そこで、アプリを開発し、YouTube のレシピ動画を簡単に保存・管理できるようにしたい。
 
-# ディレクトリ構造（2025/10/29 時点）
+# MVP
+- YouTube上のレシピ動画をURLで簡単に登録できる（食材やレシピ名、レシピカード画像の自動抽出）
+- レシピ一覧・詳細表示
+- レシピのカテゴリー・材料による検索・絞り込み
+この３つができれば、とりあえず MVP としては成立すると考えている。
+理由：　
+YouTubeプラットフォームの再生リスト機能の代替として、ユーザーが自分好みのレシピ集を簡単に作成・管理できることが主目的であるため。
+
+# ディレクトリ構造（2025/11/2 時点・最新）
 
 RecipeApp-React-FastAPI-/
 ├── README.md
 ├── start_all.bat
 ├── backend/
-│ ├── app.py
-│ ├── database.py
-│ ├── main.py
-│ ├── models.py
-│ ├── requirements.txt
-│ ├── seed_data.py
-│ ├── test.db
-│ └── **pycache**/
+│   ├── app.py
+│   ├── database.py
+│   ├── main.py
+│   ├── models.py
+│   ├── requirements.txt
+│   ├── seed_data.py
+│   ├── test.db
+│   └── alembic/
+│       ├── env.py
+│       ├── README
+│       ├── script.py.mako
+│       └── versions/
+│           └── f262b2fa9ba6_更新.py
 ├── docs/
-│ ├── api_design.md
-│ ├── er_diagram.md
-│ ├── layout_proposal.md
-│ ├── requirements.md
-│ └── youtube_playlist_bulk_add.md
+│   ├── api_design.md
+│   ├── er_diagram.md
+│   ├── layout_proposal.md
+│   ├── requirements.md
+│   └── youtube_playlist_bulk_add.md
 ├── frontend/
-│ ├── package.json
-│ ├── postcss.config.js
-│ ├── README.md
-│ ├── tailwind.config.js
-│ ├── tsconfig.json
-│ ├── public/
+│   ├── package.json
+│   ├── postcss.config.js
+│   ├── README.md
+│   ├── tailwind.config.js
+│   ├── tsconfig.json
+│   ├── public/
+│   │   ├── index.html
+│   │   ├── manifest.json
+│   │   ├── robots.txt
+│   │   └── app_icon.png
+│   └── src/
+│       ├── App.css
+│       ├── App.test.tsx
+│       ├── App.tsx
+│       ├── index.css
+│       ├── index.tsx
+│       ├── react-app-env.d.ts
+│       ├── reportWebVitals.ts
+│       ├── setupTests.ts
+│       ├── api/
+│       │   └── api.ts
+│       ├── components/
+│       │   ├── App.module.css
+│       │   ├── admin/
+│       │   │   ├── AdminDashboard.module.css
+│       │   │   └── AdminDashboard.tsx
+│       │   ├── common/
+│       │   │   ├── CategorySelect.tsx
+│       │   │   ├── IngredientSearch.module.css
+│       │   │   ├── IngredientSearch.tsx
+│       │   │   ├── IngredientTag.tsx
+│       │   │   ├── RecipeCard.tsx
+│       │   │   ├── RecipeTag.tsx
+│       │   │   └── TagSelect.tsx
+│       │   ├── feature/
+│       │   │   ├── recipeAdd/
+│       │   │   │   ├── PlaylistBulkAdd.tsx
+│       │   │   │   ├── ThumbnailInput.tsx
+│       │   │   │   └── RecipeForm.tsx  
+│       │   │   └── recipeDetail/
+│       │   ├── layout/
+│       │   │   ├── BottomNavigationbar.tsx
+│       │   │   └── Header.tsx
+│       │   └── pages/
+│       │       ├── HomeSection.tsx
+│       │       ├── PlaylistBulkAddSection.tsx
+│       │       ├── RecipeAddSection.module.css
+│       │       ├── RecipeAddSection.tsx
+│       │       ├── RecipeDetailSection.module.css
+│       │       ├── RecipeDetailSection.tsx
+│       │       ├── RecipeListSection.module.css
+│       │       ├── RecipeListSection.tsx
+│       │       ├── RecipeSuggestSection.module.css
+│       │       └── RecipeSuggestSection.tsx
+│       └── types/
+│           └── models.ts
 │ │ ├── index.html
 │ │ ├── manifest.json
 │ │ └── robots.txt

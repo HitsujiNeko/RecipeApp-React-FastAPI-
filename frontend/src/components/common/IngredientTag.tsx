@@ -25,7 +25,7 @@ export default function IngredientTag({ ingredient, hideIcon}: IngredientTagProp
     <div>
       <span
         className={`
-          border text-xs font-medium rounded-2xl px-1 py-0.5
+          mr-0.5 border text-xs font-medium rounded-2xl px-1 py-0.5
           ${getTypeStyle(ingredient.type)}
           `}
           >

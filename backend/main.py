@@ -39,8 +39,6 @@ def read_root():
 ## API
 ###
 
-
-
 ## Read （取得）　　GETメソッド
 # フロントエンドでAPIを同時取得するため個別に定義
 
@@ -68,11 +66,15 @@ def read_youtube_channels(session: Session = Depends(get_session)):
 def read_recipes(
     ingredients: Optional[str] = None,
     category: Optional[int] = None,
+    tag_ids: Optional[str] = None,
+    youtube_channel_id: Optional[int] = None,
     session: Session = Depends(get_session),
 ):
     query = select(Recipe)
     if category:
         query = query.where(Recipe.category_id == category)
+    if youtube_channel_id:
+        query = query.where(Recipe.youtube_channel_id == youtube_channel_id)
     recipes = session.exec(query).all()
     # 食材フィルタ（全て含む場合のみヒット）
     if ingredients:
@@ -82,6 +84,16 @@ def read_recipes(
             for recipe in recipes:
                 recipe_ing_ids = [ing.id for ing in recipe.ingredients]
                 if all(i in recipe_ing_ids for i in ingredient_ids):
+                    filtered.append(recipe)
+            recipes = filtered
+    # タグフィルタ（全て含む場合のみヒット）
+    if tag_ids:
+        tag_id_list = [int(i) for i in tag_ids.split(",") if i]
+        if tag_id_list:
+            filtered = []
+            for recipe in recipes:
+                recipe_tag_ids = [tag.id for tag in recipe.tags] if recipe.tags else []
+                if all(tid in recipe_tag_ids for tid in tag_id_list):
                     filtered.append(recipe)
             recipes = filtered
     result = []
@@ -109,7 +121,6 @@ def read_recipe_detail(recipe_id: int, session: Session = Depends(get_session)):
     return data
 
 ## Create (新規作成) POSTメソッド
-
 class RecipeCreateRequest(BaseModel):
     name: str
     url: str
@@ -118,7 +129,20 @@ class RecipeCreateRequest(BaseModel):
     ingredient_ids: List[int]
     category_id: Optional[int] = None
     youtube_channel_id: Optional[int] = None
-    tags: List[int] = []
+    tag_ids: List[int] = []
+
+class RecipeResponse(BaseModel):
+    id: int
+    name: str
+    url: str
+    thumbnail: str
+    notes: Optional[str]
+    created_at: str
+    ingredients: List[dict]
+    category: Optional[dict]
+    tags: List[dict]
+    youtube_channel: Optional[dict]
+
 
 @app.post("/api/recipes")
 def create_recipe(req: RecipeCreateRequest, session: Session = Depends(get_session)):
@@ -129,23 +153,74 @@ def create_recipe(req: RecipeCreateRequest, session: Session = Depends(get_sessi
         notes=req.notes,
         category_id=req.category_id,
         youtube_channel_id=req.youtube_channel_id,
-        tags=req.tags,
     )
+    # タグの関連付け
+    if req.tag_ids:
+        tags = session.exec(select(RecipeTag)).all()
+        recipe.tags = [tag for tag in tags if tag.id in req.tag_ids]
     # 食材の関連付け
     if req.ingredient_ids:
         ingredients = session.exec(select(Ingredient)).all()
         recipe.ingredients = [ing for ing in ingredients if ing.id in req.ingredient_ids]
     session.add(recipe)
-    session.commit()
+    try:
+        session.commit()
+    except Exception as e:
+        from sqlalchemy.exc import IntegrityError
+        if isinstance(e, IntegrityError) and 'unique constraint' in str(e).lower():
+            session.rollback()
+            raise HTTPException(status_code=409, detail="同じ名前のレシピが既に存在します")
+        else:
+            session.rollback()
+            raise
     session.refresh(recipe)
     return recipe
 
+
+# --- 共通関数 ---
+def get_or_create_youtube_channel(channel_id: str, session: Session):
+    """
+    YouTubeチャンネルIDからDBのYouTubeChannelを取得。なければAPIから情報取得しDB登録。
+    戻り値: (db_channel_id, channel_icon_url, channel_title, channel_url)
+    """
+    channel_icon_url = None
+    channel_title = None
+    channel_url = f"https://www.youtube.com/channel/{channel_id}"
+    db_channel_id = None
+    # DBに既存チャンネルがあるか
+    db_channel = session.exec(select(YouTubeChannel).where(YouTubeChannel.url == channel_url)).first()
+    if db_channel:
+        return db_channel.id, db_channel.thumbnail, db_channel.name, db_channel.url
+    # なければAPIで取得
+    channel_params = {
+        "part": "snippet",
+        "id": channel_id,
+        "key": YOUTUBE_API_KEY,
+    }
+    channel_resp = requests.get("https://www.googleapis.com/youtube/v3/channels", params=channel_params)
+    channel_data = channel_resp.json()
+    channel_items = channel_data.get("items", [])
+    if channel_items:
+        channel_snippet = channel_items[0]["snippet"]
+        channel_icon_url = channel_snippet["thumbnails"]["default"]["url"]
+        channel_title = channel_snippet["title"]
+        db_channel = YouTubeChannel(
+            name=channel_title,
+            url=channel_url,
+            thumbnail=channel_icon_url
+        )
+        session.add(db_channel)
+        session.commit()
+        session.refresh(db_channel)
+        db_channel_id = db_channel.id
+        return db_channel_id, channel_icon_url, channel_title, channel_url
+    return None, None, None, channel_url
+
 # YouTube動画情報取得API
 @app.post("/api/youtube/video")
-def fetch_youtube_video(video_url: str = Body(..., embed=True)):
-    # 動画ID抽出
+def fetch_youtube_video(video_url: str = Body(..., embed=True), session: Session = Depends(get_session)):
     import re
-    # v=xxxx, youtu.be/xxxx, embed/xxxx, どの形式にも対応
+    # 動画ID抽出
     patterns = [
         r"youtu\.be/([\w-]+)",
         r"v=([\w-]+)",
@@ -172,18 +247,26 @@ def fetch_youtube_video(video_url: str = Body(..., embed=True)):
     if not items:
         return {"error": "Video not found"}
     snippet = items[0]["snippet"]
+    channel_id = snippet.get("channelId")
+    db_channel_id, channel_icon_url, channel_title, channel_url = (None, None, None, None)
+    if channel_id:
+        db_channel_id, channel_icon_url, channel_title, channel_url = get_or_create_youtube_channel(channel_id, session)
     result = {
         "videoId": video_id,
         "title": snippet["title"],
         "description": snippet.get("description", ""),
         "thumbnail": snippet["thumbnails"]["default"]["url"],
-        "url": f"https://www.youtube.com/watch?v={video_id}"
+        "url": f"https://www.youtube.com/watch?v={video_id}",
+        "channelTitle": snippet["channelTitle"],
+        "channelIcon": channel_icon_url,
+        "channelId": channel_id,
+        "dbChannelId": db_channel_id
     }
     return result
 
 # YouTubeプレイリストから動画情報を取得
 @app.post("/api/youtube/playlist")
-def fetch_youtube_playlist(playlist_url: str = Body(..., embed=True)):
+def fetch_youtube_playlist(playlist_url: str = Body(..., embed=True), session: Session = Depends(get_session)):
     # プレイリストID抽出
     import re
     match = re.search(r"[?&]list=([\w-]+)", playlist_url)
@@ -212,27 +295,28 @@ def fetch_youtube_playlist(playlist_url: str = Body(..., embed=True)):
     result = []
     for item in items:
         snippet = item["snippet"]
+        channel_id = snippet.get("channelId")
+        db_channel_id, channel_icon_url, channel_title, channel_url = (None, None, None, None)
+        if channel_id:
+            db_channel_id, channel_icon_url, channel_title, channel_url = get_or_create_youtube_channel(channel_id, session)
         result.append({
             "videoId": snippet["resourceId"]["videoId"],
             "title": snippet["title"],
             "description": snippet.get("description", ""),
             "thumbnail": snippet["thumbnails"]["default"]["url"],
-            "url": f"https://www.youtube.com/watch?v={snippet['resourceId']['videoId']}"
+            "url": f"https://www.youtube.com/watch?v={snippet['resourceId']['videoId']}",
+            "channelTitle": snippet.get("channelTitle", ""),
+            "channelIcon": channel_icon_url,
+            "channelId": channel_id,
+            "dbChannelId": db_channel_id
         })
     return result
 
-class RecipeBulkCreateRequest(BaseModel):
-    name: str
-    url: str
-    thumbnail: str
-    notes: Optional[str] = None
-    ingredient_ids: List[int]
-    category_id: Optional[int] = None
-    youtube_channel_id: Optional[int] = None
-    tags: List[int] = []
+
+
 
 @app.post("/api/recipes/bulk")
-def bulk_add_recipes(recipes: List[RecipeBulkCreateRequest], session: Session = Depends(get_session)):
+def bulk_add_recipes(recipes: List[RecipeCreateRequest], session: Session = Depends(get_session)):
     for req in recipes:
         recipe = Recipe(
             name=req.name,

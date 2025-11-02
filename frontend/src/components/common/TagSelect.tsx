@@ -27,7 +27,7 @@ export default function TagSelect({
             <div
               key={tag.id}
               onClick={() => onToggle(tag.id)}
-              className={`cursor-pointer ${selectedTagIds.includes(tag.id) ? 'ring-2 ring-orange-400' : ''}`}
+              className={`cursor-pointer ${selectedTagIds.includes(tag.id) ? 'rounded-sm ring-2 ring-orange-400' : ''}`}
             >
               <RecipeTag recipeTag={tag} />
             </div>
@@ -37,7 +37,7 @@ export default function TagSelect({
           className="bg-orange-400 text-white px-4 py-1 rounded font-bold w-full"
           onClick={onClose}
         >
-          セット
+          タグをセット
         </button>
       </div>
     </div>

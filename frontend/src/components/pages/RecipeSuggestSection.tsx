@@ -59,22 +59,22 @@ export default function RecipeSuggestSection({
 
   return (
     <section>
-      <div className={styles.suggestLayout}>
-        <div className={styles.suggestInput}>
-          <h2>食材をえらぶ</h2>
+      <div className="">
+        <div className="">
+          <h2 className="text-lg font-bold">食材をえらぶ</h2>
           <IngredientSearch
             selectedIds={selectedIngredients}
             onChange={setSelectedIngredients}
             ingredients={ingredients}
           />
-          <h2>カテゴリをえらぶ</h2>
+          <h2 className="text-lg font-bold mt-1">カテゴリをえらぶ</h2>
           <CategorySelect
             value={selectedCategory}
             onChange={setSelectedCategory}
             categories={categories}
           />
           <button
-            className={styles.searchButton}
+            className="w-full"
             onClick={handleSearch}
             disabled={loading}
           >
@@ -87,7 +87,7 @@ export default function RecipeSuggestSection({
           {recipes.length > 0 ? (
             <div>
               <h2>検索結果: {recipes.length}件</h2>
-              <div className={styles.recipeGrid}>
+              <div className="grid grid-cols-2  gap-6">
                 {recipes.map((r) => (
                   <RecipeCard
                     key={r.id}
@@ -99,7 +99,7 @@ export default function RecipeSuggestSection({
               </div>
             </div>
           ) : (
-            <div className={styles.noResult}>検索結果がありません</div>
+            <div className="text-xl h-56 item text-center p-3 bg-red-100 text-red-600">検索結果がありません</div>
           )}
         </div>
       </div>

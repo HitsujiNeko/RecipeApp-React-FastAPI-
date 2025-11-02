@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import styles from "./components/App.module.css";
 import Header from "./components/layout/Header";
@@ -10,10 +10,19 @@ import RecipeAddSection from "./components/pages/RecipeAddSection";
 import RecipeListSection from "./components/pages/RecipeListSection";
 import RecipeDetailSection from "./components/pages/RecipeDetailSection";
 import AdminDashboard from "./components/admin/AdminDashboard";
+import PlaylistBulkAddSection from "./components/pages/PlaylistBulkAddSection";
+
 
 function App() {
   const [nav, setNav] = useState("suggest");
   const [selectedRecipeId, setSelectedRecipeId] = useState<number | null>(null);
+
+  // navigateToPlaylistイベントでSPA遷移
+  useEffect(() => {
+    const handler = () => setNav("playlist");
+    window.addEventListener("navigateToPlaylist", handler);
+    return () => window.removeEventListener("navigateToPlaylist", handler);
+  }, []);
 
   let content;
   switch (nav) {
@@ -49,6 +58,9 @@ function App() {
       break;
     case "admin":
       content = <AdminDashboard />;
+      break;
+    case "playlist":
+      content = <PlaylistBulkAddSection />;
       break;
     default:
       content = <RecipeSuggestSection 

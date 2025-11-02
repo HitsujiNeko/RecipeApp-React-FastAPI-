@@ -12,16 +12,16 @@
 //  型定義は ../types/models.ts で定義済み
 
 //  APIは ../api/api.ts で定義済み
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { IngredientModel } from "../../types/models";
 import IngredientTag from "./IngredientTag";
-import styles from "./IngredientSearch.module.css";
 
 interface IngredientSearchProps {
   selectedIds: number[];
   onChange: (ids: number[]) => void;
   ingredients: IngredientModel[];
 }
+
 
 
 const IngredientSearch: React.FC<IngredientSearchProps> = ({
@@ -51,40 +51,56 @@ const IngredientSearch: React.FC<IngredientSearchProps> = ({
   };
 
   return (
-    <div className={styles.container}>
+    <div className="w-full max-w-md mx-auto bg-orange-50 rounded-xl shadow-md  border-2 border-orange-400">
       <input
         type="text"
-        placeholder="🔍：食材をさがす"
+        placeholder="🔍 食材をさがす (例: たまご, とりむね)"
         value={search}
         onChange={handleSearch}
-        className="w-full p-2 mb-2 rounded-lg outline-none common-border-orange"
+        className="w-full px-4 py-2 mb-3 rounded-lg common-border-orange  text-base bg-white"
+        inputMode="search"
+        autoComplete="off"
       />
-      <div className="flex">
-        <strong className="">選択中：</strong>
-        <div className="flex">
-        {selectedIds.length === 0
-          ? "未選択"
-          : ingredients
-              .filter((ing) => selectedIds.includes(ing.id))
-              .map((ing) => (
-                <IngredientTag key={ing.id} ingredient={ing} />
-              ))}
-        </div>
+      <div className="flex flex-wrap items-center gap-2 mb-2 text-sm">
+        <span className="ml-2 font-semibold">選択中：</span>
+        {selectedIds.length === 0 ? (
+          <span className="text-gray-400">未選択</span>
+        ) : (
+          ingredients
+            .filter((ing) => selectedIds.includes(ing.id))
+            .map((ing) => (
+              <IngredientTag key={ing.id} ingredient={ing} />
+            ))
+        )}
       </div>
-      <div className={styles.listArea}>
-        <ul className={styles.list}>
-          {filteredIngredients.map((ing) => (
-            <li key={ing.id} className={styles.listItem}>
-              <label>
+      <div className="max-h-40 overflow-y-auto bg-white border border-orange-100 rounded-lg p-1">
+        <ul className="divide-y divide-orange-100">
+          {filteredIngredients.length === 0 ? (
+            <li className="py-3 text-center text-gray-400">該当する食材がありません</li>
+          ) : (
+            filteredIngredients.map((ing) => (
+              <li
+                key={ing.id}
+                className="flex items-center px-2 py-2 hover:bg-orange-50 transition-colors cursor-pointer"
+                onClick={() => handleToggle(ing.id)}
+              >
                 <input
                   type="checkbox"
                   checked={selectedIds.includes(ing.id)}
                   onChange={() => handleToggle(ing.id)}
+                  className="accent-orange-500 w-4 h-4 mr-2"
+                  tabIndex={-1}
+                  readOnly
                 />
-                <span className={styles.ingredientName}>{ing.name}</span>
-              </label>
-            </li>
-          ))}
+                <span className="ml-1 text-sm text-gray-800">{ing.name}</span>
+                {ing.type && (
+                  <span className="ml-2 px-2 py-0.5 rounded-full bg-orange-100 text-orange-500 text-xs font-medium">
+                    {ing.type}
+                  </span>
+                )}
+              </li>
+            ))
+          )}
         </ul>
       </div>
     </div>

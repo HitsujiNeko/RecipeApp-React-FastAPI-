@@ -31,7 +31,7 @@ export default function CategorySelect({
 }: CategorySelectProps) {
 
   return (
-    <div className="grid grid-cols-3 gap-4 my-4">
+    <div className="grid grid-cols-3 gap-1 my-2">
       {enableSelectAll !== false && (
         <label
           key={0}

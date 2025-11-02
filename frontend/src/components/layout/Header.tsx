@@ -1,11 +1,13 @@
 import styles from "./Header.module.css";
 
 const HEADER_SECTION = [
-  { key: "suggest", label: "レシピ提案" },
-  { key: "add", label: "レシピ追加" },
-  { key: "list", label: "レシピ一覧" },
+  { key: "suggest", label: "Recipe Search" },
+  { key: "add", label: "RecipeAdd" },
+  { key: "list", label: "RecipeList" },
   { key: "home", label: "HOME" },
   { key: "detail", label: "レシピを見る" },
+  { key: "admin", label: "管理ダッシュボード" },
+  { key: "playlist", label: "一括追加" },
 ];
 
 type HeaderSectionProps = {
@@ -15,14 +17,34 @@ type HeaderSectionProps = {
 
 export default function Header(props: HeaderSectionProps) {
   return (
-    <header className="flex justify-between items-center p-4 bg-orange-400 shadow-md">
+    <header className="flex justify-between items-center p-3 bg-orange-400 shadow-md">
       <div className="font-bold text-2xl ml-2">
-        {HEADER_SECTION.find((section) => section.key === props.nav)?.label}
+          <span
+            className="font-bold text-2xl md:text-3xl px-3 py-1 rounded-full bg-white/80 text-orange-500 drop-shadow  border-2 border-dashed border-orange-300 animate-bounce-slow"
+            style={{ fontFamily: '"Zen Maru Gothic", "Comic Sans MS", "cursive", sans-serif' }}
+          >
+            {HEADER_SECTION.find((section) => section.key === props.nav)?.label}
+          </span>
       </div>
-      <div className="flex items-center cursor-pointer font-bold text-2xl mr-3"  onClick={() => props.setNav("home")}>
-        <img src="/app_icon.png" alt="アプリアイコン" className="w-11 h-11 mr-3" />
-        
-        <p>アプリ名</p>
+      <div
+        className="flex items-center cursor-pointer font-bold text-xl select-none min-w-0"
+        onClick={() => props.setNav("home")}
+        style={{ maxWidth: '220px' }}
+      >
+        <span className="inline-block bg-white/90 rounded-full border-2 border-orange-200 shadow p-0.5 animate-bounce-slow">
+          <img
+            src="/app_icon.png"
+            alt="アプリアイコン"
+            className="w-10 h-10 object-contain drop-shadow"
+            style={{ filter: 'drop-shadow(0 2px 6px #fbbf24)' }}
+          />
+        </span>
+        <span
+          className="ml-1 px-1.5 py-0.5 rounded-full bg-white/80 text-orange-500 border border-dashed border-pink-200 shadow text-xs truncate"
+          style={{ fontFamily: '"Zen Maru Gothic", "Comic Sans MS", "cursive", sans-serif', letterSpacing: '0.06em', maxWidth: '120px' }}
+        >
+          もこもこきっちん
+        </span>
       </div>
     </header>
   )

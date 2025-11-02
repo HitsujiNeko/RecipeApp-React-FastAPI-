@@ -38,7 +38,9 @@ export async function fetchRecipeTags(): Promise<RecipeTagModel[]> {
 // レシピ一覧を取得（クエリ対応）
 export async function fetchRecipes(
   ingredientIds?: number[],
-  categoryId?: number | null
+  categoryId?: number | null,
+  tagIds?: number[],
+  youtubeChannelId?: number | null,
 ): Promise<RecipeModel[]> {
   const params = new URLSearchParams();
   if (ingredientIds && ingredientIds.length > 0) {
@@ -46,6 +48,12 @@ export async function fetchRecipes(
   }
   if (categoryId) {
     params.append("category", String(categoryId));
+  }
+  if (tagIds && tagIds.length > 0) {
+    params.append("tag_ids", tagIds.join(","));
+  }
+  if (youtubeChannelId) {
+    params.append("youtube_channel_id", String(youtubeChannelId));
   }
   const url =
     "http://localhost:8000/api/recipes" +

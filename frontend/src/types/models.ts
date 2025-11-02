@@ -35,7 +35,7 @@ export type RecipeModel = {
   ingredients: IngredientModel[]; // 詳細取得時
   category: CategoryModel; // 詳細取得時
   tags?: RecipeTagModel[]; // 追加: タグ一覧
-  channelIcon?: string; // 追加: チャンネルアイコンURL
+  youtube_channel?: YouTubeChannelModel; // 追加: チャンネル情報
   created_at?: string; // オプション: 日時
 };
 
@@ -48,5 +48,7 @@ export type RecipeCreateRequest = {
   thumbnail: string;
   notes?: string;
   ingredient_ids: number[];
-  category_id?: number | null;
+  category_id: number ;
+  tag_ids?: number[]; // 追加: タグID配列
+  youtube_channel_id?: number | null; // 追加: チャンネルID
 };

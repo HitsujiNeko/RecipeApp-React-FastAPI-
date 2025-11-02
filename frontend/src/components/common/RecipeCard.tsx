@@ -50,15 +50,13 @@ export default function RecipeCard({
               ${getCategoryStyle(recipe.category?.name)}`}>
             {recipe.category?.name}
           </span>
-          {/* レシピタグ */}
           <div className="absolute top-1 right-1 flex flex-col gap-1 z-10">
               {recipe.tags?.map(tag => ( 
-                <RecipeTag key={tag.id} recipeTag={tag} hideIcon />
+                <RecipeTag key={tag.id} recipeTag={tag} />
               ))
                 }
           </div>
-          {/* TODO: Replace src with recipe.channelIcon when available */}
-          <img src="後で{recipe.channelIcon}に変更" alt="チャンネルアイコン" className="absolute right-1 bottom-1 w-8 h-8 rounded-full border-2 border-white shadow" />
+          <img src={recipe.youtube_channel?.thumbnail} alt="チャンネルアイコン" className="absolute right-1 bottom-1 w-8 h-8 rounded-full border-2 border-white shadow" />
         </a>
       </div>
       {displayIngCat && (

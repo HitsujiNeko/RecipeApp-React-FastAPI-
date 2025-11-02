@@ -18,5 +18,5 @@ code {
 
 /* 共通のユーティリティクラス */
 .common-border-orange {
-  @apply border-2 border-orange-400 hover:border-orange-600;
+  @apply border-2 border-orange-400 hover:border-orange-600 outline-none;
 }

@@ -19,7 +19,7 @@ export default function ThumbnailInput({ youtubeUrl, onChange }: ThumbnailInputP
   const [uploadMode, setUploadMode] = useState(false); // 編集モードの状態
   const [uploadUrl, setUploadUrl] = useState<string>(""); // アップロード画像用
 
-  // YouTube URLからサムネイル自動生成
+  // YouTube URLからサムネイル自動生成（初回とyoutubeUrl変更時のみ）
   useEffect(() => {
     const id = extractYoutubeId(youtubeUrl);
     if (id) {
@@ -30,7 +30,8 @@ export default function ThumbnailInput({ youtubeUrl, onChange }: ThumbnailInputP
       setThumbnailUrl("");
       onChange("");
     }
-  }, [youtubeUrl, onChange]);
+    // eslint-disable-next-line
+  }, [youtubeUrl]);
 
   // 画像アップロード時
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -44,8 +45,58 @@ export default function ThumbnailInput({ youtubeUrl, onChange }: ThumbnailInputP
   };
   return (
     <div>
-      <div>
-        <label className="block font-bold mb-2">サムネイル画像プレビュー</label>
+      <div className="flex justify-between items-center ">
+        <label className="block font-bold ">サムネイル画像プレビュー</label>
+        {!uploadMode && (
+          <button
+            type="button"
+            onClick={() => setUploadMode(true)}
+            className="ml-3 px-3  py-1 rounded-full bg-orange-500 text-white text-sm font-semibold shadow hover:bg-orange-600 transition-colors"
+          >
+            画像を自分で追加
+          </button>
+        )}
+    </div>
+        {uploadMode && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+            <div className="bg-white rounded-xl shadow-lg p-5 w-11/12 max-w-xs mx-auto flex flex-col gap-4 relative animate-fadeIn">
+              <button
+                type="button"
+                onClick={() => setUploadMode(false)}
+                className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-lg font-bold focus:outline-none w-7 h-7 flex items-center justify-center p-0"
+                aria-label="閉じる"
+                style={{lineHeight: 1}}
+              >
+                ×
+              </button>
+              <div className="text-center mb-1">
+                <span className="block text-base font-semibold text-orange-500">画像ファイルをアップロード</span>
+                <span className="block text-xs text-gray-500">サムネイル画像を選択してください</span>
+              </div>
+              <label className="block cursor-pointer">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={e => {
+                    handleFileChange(e);
+                    setUploadMode(false); // 画像選択時に自動で閉じる
+                  }}
+                  className="hidden"
+                />
+                <div className="w-full py-3 px-4 rounded-lg border-2 border-dashed border-orange-300 bg-orange-50 text-orange-500 text-center hover:bg-orange-100 transition-colors cursor-pointer">
+                  画像を選択
+                </div>
+              </label>
+              <button
+                type="button"
+                onClick={() => setUploadMode(false)}
+                className="w-full py-2 rounded-lg bg-gray-200 text-gray-700 text-sm font-semibold hover:bg-gray-300 transition-colors"
+              >
+                キャンセル
+              </button>
+            </div>
+          </div>
+        )}
         <div className="mb-2">
           {thumbnailUrl ? (
             <div className="flex items-center gap-3 bg-white rounded-xl border border-orange-200 shadow-sm p-2">
@@ -69,25 +120,6 @@ export default function ThumbnailInput({ youtubeUrl, onChange }: ThumbnailInputP
             </div>
           )}
         </div>
-      </div>
-      {!uploadMode && (
-        <button type="button" onClick={() => setUploadMode(true)}>
-          画像を自分で追加
-        </button>
-      )}
-      {uploadMode && (
-        <div className="mt-2">
-          <div>
-            <label>
-              画像ファイルをアップロード:
-              <input type="file" accept="image/*" onChange={handleFileChange} />
-            </label>
-          </div>
-          <button type="button" onClick={() => setUploadMode(false)} style={{ marginTop: 8 }}>
-            キャンセル
-          </button>
-        </div>
-      )}
     </div>
   );
 };
