@@ -25,7 +25,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "https://recipe-app-frontend-kappa.vercel.app"
+        "https://recipe-app-frontend-eb1qvxfun-hitsujinekos-projects.vercel.app/"
                    ],  # ReactのURL
     allow_credentials=True,
     allow_methods=["*"],
