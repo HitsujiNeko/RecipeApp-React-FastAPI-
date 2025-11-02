@@ -7,35 +7,31 @@ import {
   RecipeCreateRequest,
 } from "../types/models";
 
-// GET
 
-// 食材一覧を取得
+// APIベースURL（環境変数から取得、なければローカル）
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+
+// GET
 export async function fetchIngredients(): Promise<IngredientModel[]> {
-  const res = await fetch("http://localhost:8000/api/ingredients");
+  const res = await fetch(`${API_BASE_URL}/api/ingredients`);
   if (!res.ok) throw new Error("食材一覧の取得に失敗しました");
   return await res.json();
 }
-
-// カテゴリ一覧を取得
 export async function fetchCategories(): Promise<CategoryModel[]> {
-  const res = await fetch("http://localhost:8000/api/categories");
+  const res = await fetch(`${API_BASE_URL}/api/categories`);
   if (!res.ok) throw new Error("カテゴリ一覧の取得に失敗しました");
   return await res.json();
 }
-// チャンネル一覧を取得
 export async function fetchYouTubeChannels(): Promise<YouTubeChannelModel[]> {
-  const res = await fetch("http://localhost:8000/api/youtube_channels");
+  const res = await fetch(`${API_BASE_URL}/api/youtube_channels`);
   if (!res.ok) throw new Error("チャンネル一覧の取得に失敗しました");
   return await res.json();
 }
-// タグ一覧を取得
 export async function fetchRecipeTags(): Promise<RecipeTagModel[]> {
-  const res = await fetch("http://localhost:8000/api/recipe_tags");
+  const res = await fetch(`${API_BASE_URL}/api/recipe_tags`);
   if (!res.ok) throw new Error("タグ一覧の取得に失敗しました");
   return await res.json();
 }
-
-// レシピ一覧を取得（クエリ対応）
 export async function fetchRecipes(
   ingredientIds?: number[],
   categoryId?: number | null,
@@ -56,36 +52,30 @@ export async function fetchRecipes(
     params.append("youtube_channel_id", String(youtubeChannelId));
   }
   const url =
-    "http://localhost:8000/api/recipes" +
+    `${API_BASE_URL}/api/recipes` +
     (params.toString() ? `?${params.toString()}` : "");
   const res = await fetch(url);
   if (!res.ok) throw new Error("レシピ一覧の取得に失敗しました");
   return await res.json();
 }
-
-// レシピ詳細を取得
 export async function fetchRecipeDetail(id: number): Promise<RecipeModel> {
-  const res = await fetch(`http://localhost:8000/api/recipes/${id}`);
+  const res = await fetch(`${API_BASE_URL}/api/recipes/${id}`);
   if (!res.ok) throw new Error("レシピ詳細の取得に失敗しました");
   return await res.json();
 }
-
-// YouTube動画から動画情報を取得
 export async function fetchYoutubeVideo(videoUrl: string): Promise<any> {
-    const res = await fetch("http://localhost:8000/api/youtube/video", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ video_url: videoUrl }),
-    });
-    if (!res.ok) throw new Error("動画情報の取得に失敗しました");
-    return await res.json();
+  const res = await fetch(`${API_BASE_URL}/api/youtube/video`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ video_url: videoUrl }),
+  });
+  if (!res.ok) throw new Error("動画情報の取得に失敗しました");
+  return await res.json();
 }
-
-// YouTubeプレイリストから動画情報を取得
 export async function fetchYoutubePlaylist(
   playlistUrl: string
 ): Promise<any[]> {
-  const res = await fetch("http://localhost:8000/api/youtube/playlist", {
+  const res = await fetch(`${API_BASE_URL}/api/youtube/playlist`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ playlist_url: playlistUrl }),
@@ -102,7 +92,7 @@ export async function fetchYoutubePlaylist(
 export async function addIngredient(
   data: Partial<IngredientModel>
 ): Promise<IngredientModel> {
-  const res = await fetch("http://localhost:8000/api/ingredients", {
+  const res = await fetch(`${API_BASE_URL}/api/ingredients`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -114,7 +104,7 @@ export async function addIngredient(
 export async function addCategory(
   data: Partial<CategoryModel>
 ): Promise<CategoryModel> {
-  const res = await fetch("http://localhost:8000/api/categories", {
+  const res = await fetch(`${API_BASE_URL}/api/categories`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -125,7 +115,7 @@ export async function addCategory(
 
 // 単体追加
 export async function addRecipe(recipe: RecipeCreateRequest): Promise<any> {
-  const res = await fetch("http://localhost:8000/api/recipes", {
+  const res = await fetch(`${API_BASE_URL}/api/recipes`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(recipe),
@@ -138,7 +128,7 @@ export async function addRecipe(recipe: RecipeCreateRequest): Promise<any> {
 export async function bulkAddRecipes(
   recipes: RecipeCreateRequest[]
 ): Promise<any> {
-  const res = await fetch("http://localhost:8000/api/recipes/bulk", {
+  const res = await fetch(`${API_BASE_URL}/api/recipes/bulk`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(recipes),
@@ -156,7 +146,7 @@ export async function updateIngredient(
   id: number,
   data: Partial<IngredientModel>
 ): Promise<IngredientModel> {
-  const res = await fetch(`http://localhost:8000/api/ingredients/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/api/ingredients/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -170,7 +160,7 @@ export async function updateCategory(
   id: number,
   data: Partial<CategoryModel>
 ): Promise<CategoryModel> {
-  const res = await fetch(`http://localhost:8000/api/categories/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/api/categories/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -184,7 +174,7 @@ export async function updateRecipe(
   id: number,
   data: Partial<RecipeModel>
 ): Promise<RecipeModel> {
-  const res = await fetch(`http://localhost:8000/api/recipes/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/api/recipes/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -199,7 +189,7 @@ export async function updateRecipe(
 
 // 食材削除
 export async function deleteIngredient(id: number): Promise<void> {
-  const res = await fetch(`http://localhost:8000/api/ingredients/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/api/ingredients/${id}`, {
     method: "DELETE",
   });
   if (!res.ok) throw new Error("食材削除に失敗しました");
@@ -207,7 +197,7 @@ export async function deleteIngredient(id: number): Promise<void> {
 
 // カテゴリ削除
 export async function deleteCategory(id: number): Promise<void> {
-  const res = await fetch(`http://localhost:8000/api/categories/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/api/categories/${id}`, {
     method: "DELETE",
   });
   if (!res.ok) throw new Error("カテゴリ削除に失敗しました");
@@ -215,7 +205,7 @@ export async function deleteCategory(id: number): Promise<void> {
 
 // レシピ削除
 export async function deleteRecipe(id: number): Promise<void> {
-  const res = await fetch(`http://localhost:8000/api/recipes/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/api/recipes/${id}`, {
     method: "DELETE",
   });
   if (!res.ok) throw new Error("レシピ削除に失敗しました");
