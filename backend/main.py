@@ -18,8 +18,7 @@ YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
 app = FastAPI()
 
 
-# メモ：↓　残しておいて問題ない 既にテーブルがある場合は作成しないため
-create_db()
+
 
 
 app.add_middleware(

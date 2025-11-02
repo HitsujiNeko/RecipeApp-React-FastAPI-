@@ -44,10 +44,13 @@ frontend\src\utils\validation.ts, frontend\src\utils\youtubeData.ts に共通関
 3. **Alembicでマイグレーションを実行**
   - `alembic upgrade head`でDBスキーマを反映　
 
-現在、ここまで完了済み
+
 
 4. **バックエンド（FastAPI）をRender等にデプロイ**
   - GitHub連携で自動デプロイ可。環境変数でDB URLを設定
+
+  現在、ここまで完了済み　（Render ,supabaseで公開したが、DBの接続が不安定なことがあるため、改善予定）
+  
 5. **フロントエンド（React）をVercel等にデプロイ**
   - GitHub連携で自動デプロイ可。APIエンドポイントをRenderのURLに合わせる
 6. **動作確認・データ投入**

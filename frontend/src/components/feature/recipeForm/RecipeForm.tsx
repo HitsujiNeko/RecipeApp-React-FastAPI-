@@ -109,7 +109,7 @@ export default function RecipeForm(props: RecipeFormProps) {
             value={values.name}
             onChange={(e) => handleChange('name', e.target.value)}
             required
-            className="bg-white rounded-md w-full mt-1 p-2 border common-border-orange "
+            className="bg-white rounded-md w-full mt-1 p-1.5 border common-border-orange "
           />
         </label>
       </div>
@@ -133,23 +133,29 @@ export default function RecipeForm(props: RecipeFormProps) {
         enableSelectAll={false}
       />
       {/* タグ選択 */}
-      <button type="button" onClick={() => setTagSelectOpen(true)}>
-        タグを選択
-      </button>
-      <div>
-        <span className="font-bold">選択中のタグ：</span>
-        {values.tag_ids && values.tag_ids.length > 0 ? (
-          props.tags
-            .filter((tag) => values.tag_ids && values.tag_ids.includes(tag.id))
-            .map((tag) => <RecipeTag key={tag.id} recipeTag={tag} />)
-        ) : (
-          <span className="text-gray-400">未選択</span>
-        )}
+      <div className="flex items-center flex-wrap gap-2 mt-2 mb-2">
+        <button
+          type="button"
+          onClick={() => setTagSelectOpen(true)}
+          className=""
+        >
+          タグを選ぶ
+        </button>
+        <div className="flex items-center flex-wrap gap-1">
+          <span className="font-bold mr-1">選択中：</span>
+          {values.tag_ids && values.tag_ids.length > 0 ? (
+            props.tags
+              .filter((tag) => values.tag_ids && values.tag_ids.includes(tag.id))
+              .map((tag) => <RecipeTag key={tag.id} recipeTag={tag} />)
+          ) : (
+            <span className="text-gray-400">未選択</span>
+          )}
+        </div>
       </div>
       {/* メモ */}
       <div>
         <label className="block font-bold mb-2 mt-2">
-          メモ
+          メモ（任意）
           <textarea
             name="notes"
             value={values.notes || ''}

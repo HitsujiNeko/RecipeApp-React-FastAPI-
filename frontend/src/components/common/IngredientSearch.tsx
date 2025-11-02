@@ -61,7 +61,7 @@ const IngredientSearch: React.FC<IngredientSearchProps> = ({
         inputMode="search"
         autoComplete="off"
       />
-      <div className="flex flex-wrap items-center gap-2 mb-2 text-sm">
+      <div className="flex flex-wrap items-center gap-1 mb-2 text-sm">
         <span className="ml-2 font-semibold">選択中：</span>
         {selectedIds.length === 0 ? (
           <span className="text-gray-400">未選択</span>

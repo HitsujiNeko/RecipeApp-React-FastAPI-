@@ -1,5 +1,3 @@
-import styles from "./Header.module.css";
-
 const HEADER_SECTION = [
   { key: "suggest", label: "Recipe Search" },
   { key: "add", label: "RecipeAdd" },
@@ -7,7 +5,7 @@ const HEADER_SECTION = [
   { key: "home", label: "HOME" },
   { key: "detail", label: "レシピを見る" },
   { key: "admin", label: "管理ダッシュボード" },
-  { key: "playlist", label: "一括追加" },
+  { key: "playlist", label: "RecipeAdd" },
 ];
 
 type HeaderSectionProps = {
@@ -18,16 +16,16 @@ type HeaderSectionProps = {
 export default function Header(props: HeaderSectionProps) {
   return (
     <header className="flex justify-between items-center p-3 bg-orange-400 shadow-md">
-      <div className="font-bold text-2xl ml-2">
+      <div className="font-bold ">
           <span
-            className="font-bold text-2xl md:text-3xl px-3 py-1 rounded-full bg-white/80 text-orange-500 drop-shadow  border-2 border-dashed border-orange-300 animate-bounce-slow"
+            className="font-bold text-2xl  px-3 py-1 rounded-full bg-white/80 text-orange-500 drop-shadow  border-2 border-dashed border-orange-300 animate-bounce-slow"
             style={{ fontFamily: '"Zen Maru Gothic", "Comic Sans MS", "cursive", sans-serif' }}
           >
             {HEADER_SECTION.find((section) => section.key === props.nav)?.label}
           </span>
       </div>
       <div
-        className="flex items-center cursor-pointer font-bold text-xl select-none min-w-0"
+        className="flex items-center cursor-pointer font-bold select-none min-w-0"
         onClick={() => props.setNav("home")}
         style={{ maxWidth: '220px' }}
       >
