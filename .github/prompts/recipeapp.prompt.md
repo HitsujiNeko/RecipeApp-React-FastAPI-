@@ -219,7 +219,9 @@ RecipeApp-React-FastAPI-/
 # 技術スタック
 
 - フロントエンド: React, Tailwind CSS
-- バックエンド: FastAPI, SQLite
+- バックエンド: Python(FastAPI, alembic), supabase (PostgreSQL)
+- デプロイ: Vercel (フロントエンド), Render (バックエンド)
+- バージョン管理: GitHub
 - ドキュメント: Markdown（docs）
 
 # 設計情報

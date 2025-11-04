@@ -43,12 +43,36 @@ YouTubeプラットフォームの再生リスト機能の代替として、ユ�
 ### 起動方法
 
 - バックエンド
-  初回のみ： pip install -r requirements.txt
+  初回のみ： 
+  1. ライブラリインストール
+  
+  pip install -r requirements.txt
 
-uvicorn main:app --reload
+  2. env ファイルを作成し、必要な環境変数を設定
+  YOU_TUBE_API_KEY=<Your YouTube API Key>
+  DATABASE_URL=<Your Supabase Database URL>
+
+  起動：
+  ```bash
+  cd backend
+  ```
+
+  ```bash
+  uvicorn main:app --reload
+  ```
 
 - フロントエンド
-  初回のみ： npm install
+  初回のみ：
+  1. ライブラリインストール
+  ```bash
+  npm install
+  ```
+  2. env ファイルを作成し、必要な環境変数を設定
+  REACT_APP_API_BASE_URL=http://localhost:8000
+
+  ```bash
+  REACT_APP_API_BASE_URL=http://localhost:8000
+  ```
 
 npm start
 

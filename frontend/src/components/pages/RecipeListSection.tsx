@@ -3,26 +3,15 @@ import { fetchRecipes, fetchCategories, deleteRecipe } from "../../api/api";
 import { RecipeModel, CategoryModel } from "../../types/models";
 import RecipeCard from "../common/RecipeCard";  
 
+interface RecipeListSectionProps {
+  recipes: RecipeModel[];
+  loading: boolean;
+  error: string | null;
+  onRecipeClick: (id: number) => void;
+}
 
 
-
-export default function RecipeListSection({onRecipeClick}: {onRecipeClick: (id: number) => void}) {
-
-  const [recipes, setRecipes] = useState<RecipeModel[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchRecipes()
-      .then((data) => {
-        setRecipes(data);
-      })
-      .catch((err) => {
-        setError("レシピ一覧の取得に失敗しました");
-      });
-    setLoading(false);
-  }, []);
-
+export default function RecipeListSection({recipes, loading, error, onRecipeClick}: RecipeListSectionProps) {
   if (loading) {
     return <div>読み込み中</div>;
   }

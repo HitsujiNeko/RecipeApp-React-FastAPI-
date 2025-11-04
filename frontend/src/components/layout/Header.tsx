@@ -6,6 +6,7 @@ const HEADER_SECTION = [
   { key: "detail", label: "レシピを見る" },
   { key: "admin", label: "管理ダッシュボード" },
   { key: "playlist", label: "RecipeAdd" },
+  { key: "update", label: "RecipeUpdate" },
 ];
 
 type HeaderSectionProps = {

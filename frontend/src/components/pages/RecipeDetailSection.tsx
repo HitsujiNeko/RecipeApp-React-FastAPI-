@@ -1,14 +1,16 @@
 
 import React, { useEffect, useState } from 'react';
-import { fetchRecipeDetail } from '../../api/api';
+import { deleteRecipe, fetchRecipeDetail } from '../../api/api';
 import { RecipeModel } from '../../types/models';
 import IngredientTag from '../common/IngredientTag';
 
 type RecipeDetailSectionProps = {
   recipeId: number;
+  setNav: (nav: string) => void;
+  setSelectedRecipeId: (id: number) => void;
 };
 
-export default function RecipeDetailSection({ recipeId }: RecipeDetailSectionProps) {
+export default function RecipeDetailSection({ recipeId, setNav, setSelectedRecipeId }: RecipeDetailSectionProps) {
   const [recipe, setRecipe] = useState<RecipeModel | null>(null);
   useEffect(() => {
     fetchRecipeDetail(recipeId)
@@ -28,6 +30,17 @@ export default function RecipeDetailSection({ recipeId }: RecipeDetailSectionPro
 
   return (
     <div className="max-w-md mx-auto mt-6 bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+      <div>
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
+          onClick={() => {
+            setSelectedRecipeId(recipe.id);
+            setNav("update");
+          }}
+        >
+          このレシピを編集
+        </button>
+      </div>
       <div className="relative w-full h-56 bg-gray-100 flex items-center justify-center">
         <img
           src={recipe.thumbnail}

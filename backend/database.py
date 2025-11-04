@@ -6,7 +6,13 @@ load_dotenv()
 
 db_url = os.getenv("DATABASE_URL", "sqlite:///test.db")
 
-engine = create_engine(db_url, echo=True)
+engine = create_engine(
+            db_url, 
+            echo=True,
+            pool_size=3,
+            max_overflow=0,
+            pool_recycle=1800,
+        )
 
 def create_db():
     SQLModel.metadata.create_all(engine)

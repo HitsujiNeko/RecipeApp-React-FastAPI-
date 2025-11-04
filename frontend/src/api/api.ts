@@ -172,7 +172,7 @@ export async function updateCategory(
 // レシピ編集
 export async function updateRecipe(
   id: number,
-  data: Partial<RecipeModel>
+  data: RecipeCreateRequest
 ): Promise<RecipeModel> {
   const res = await fetch(`${API_BASE_URL}/api/recipes/${id}`, {
     method: "PUT",

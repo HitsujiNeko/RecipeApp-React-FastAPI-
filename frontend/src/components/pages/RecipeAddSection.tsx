@@ -1,17 +1,11 @@
 
 import { useState, useEffect } from "react";
 import { 
-  fetchIngredients,
-  fetchCategories, 
-  fetchRecipeTags,
   addRecipe, 
   fetchRecipes
   } from "../../api/api";
 import { 
-        IngredientModel, 
-        CategoryModel, 
-        RecipeModel,
-        RecipeTagModel, 
+        RecipeModel, 
         YouTubeChannelModel , 
         RecipeCreateRequest 
       } from "../../types/models";
@@ -19,17 +13,16 @@ import {
 import RecipeForm from "../feature/recipeForm/RecipeForm";
 import { validateRecipeForm } from "../../utils/validation";
 import { fetchAndParseYoutubeData } from "../../utils/youtubeData";
+import { useRecipeFormData } from "../../hooks/useRecipeFormData";
 
 export default function RecipeAddSection() {
   const [urlError, setUrlError] = useState<string>("");
-  const [categories, setCategories] = useState<CategoryModel[]>([]);
-  const [ingredients, setIngredients] = useState<IngredientModel[]>([]);
-  const [tags, setTags] = useState<RecipeTagModel[]>([]);
   const [channelData, setChannelData] = useState<YouTubeChannelModel | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const [existingRecipes, setExistingRecipes] = useState<RecipeModel[]>([]);
-
+  // フォーム用初期データ取得
+  const { ingredients, categories, tags, loading } = useRecipeFormData();
+  const [formSubmitting, setFormSubmitting] = useState(false);
   const defaultCategoryId = categories.length > 0 ? categories[0].id : 1;
 
   // initialValuesを一元管理
@@ -44,18 +37,6 @@ export default function RecipeAddSection() {
     youtube_channel_id: null,
   });
 
-  // 初期データ取得
-  useEffect(() => {
-    Promise.all([fetchIngredients(), fetchCategories(), fetchRecipeTags()])
-      .then(([ingredientsData, categoriesData, tagsData]) => {
-        setIngredients(ingredientsData);
-        setCategories(categoriesData);
-        setTags(tagsData);
-      })
-      .catch((err) => {
-        console.error("初期データの取得に失敗しました", err);
-      });
-  }, []);
 
   useEffect(() => {
     fetchRecipes().then(setExistingRecipes);
@@ -99,7 +80,7 @@ export default function RecipeAddSection() {
     const errors = validateRecipeForm(values, existingRecipes);
     setFormErrors(errors);
     if (Object.keys(errors).length > 0) return;
-    setLoading(true);
+    setFormSubmitting(true);
     try {
       await addRecipe(values);
       //  ここはあとで　表示の仕方を考える（デザイン）
@@ -120,14 +101,24 @@ export default function RecipeAddSection() {
       console.error("レシピの追加に失敗しました", e);
       alert("レシピの追加に失敗しました");
     }
-    setLoading(false);
+    setFormSubmitting(false);
   };
 
   // RecipeFormからのYouTube URL変更を親のinitialValuesに反映
   const handleUrlChange = (url: string) => {
     setInitialValues((prev) => ({ ...prev, url }));
   };
-
+  if (loading) 
+    return (
+      <div className="flex justify-center items-center h-64">
+        <span className="animate-spin rounded-full border-4 border-orange-400 border-t-transparent w-10 h-10 mr-3"></span>
+        <span className="text-orange-500 text-3xl font-bold ml-3">読み込み中...</span>
+      </div>
+  );
+  if (ingredients.length === 0 || categories.length === 0) {
+    return <div>食材またはカテゴリが登録されていません。先に登録してください。</div>;
+  }
+  if (formSubmitting) return <div>送信中...</div>;
   return (
     <section>
       <details>
