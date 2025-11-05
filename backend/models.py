@@ -39,7 +39,7 @@ class YouTubeChannel(SQLModel, table=True):
 
 class Recipe(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    name: str = Field(max_length=30, unique=True)
+    name: str = Field(max_length=255, unique=True)
     url: str = Field(max_length=255, unique=True)
     thumbnail: str = Field(max_length=255, unique=True, description="サムネイル画像のURL")
     notes: str | None = Field(default=None, nullable=True)

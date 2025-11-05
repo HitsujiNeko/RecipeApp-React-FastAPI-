@@ -140,74 +140,29 @@ RecipeApp-React-FastAPI-/
 │       │   │   ├── RecipeTag.tsx
 │       │   │   └── TagSelect.tsx
 │       │   ├── feature/
-│       │   │   ├── recipeAdd/
+│       │   │   ├── recipeForm/
 │       │   │   │   ├── PlaylistBulkAdd.tsx
-│       │   │   │   ├── ThumbnailInput.tsx
-│       │   │   │   └── RecipeForm.tsx  
-│       │   │   └── recipeDetail/
+│       │   │   │   ├── RecipeForm.tsx
+│       │   │   │   └── ThumbnailInput.tsx
 │       │   ├── layout/
 │       │   │   ├── BottomNavigationbar.tsx
 │       │   │   └── Header.tsx
 │       │   └── pages/
 │       │       ├── HomeSection.tsx
 │       │       ├── PlaylistBulkAddSection.tsx
-│       │       ├── RecipeAddSection.module.css
 │       │       ├── RecipeAddSection.tsx
-│       │       ├── RecipeDetailSection.module.css
 │       │       ├── RecipeDetailSection.tsx
-│       │       ├── RecipeListSection.module.css
 │       │       ├── RecipeListSection.tsx
-│       │       ├── RecipeSuggestSection.module.css
-│       │       └── RecipeSuggestSection.tsx
-│       └── types/
-│           └── models.ts
-│ │ ├── index.html
-│ │ ├── manifest.json
-│ │ └── robots.txt
-│ └── src/
-│ ├── App.css
-│ ├── App.test.tsx
-│ ├── App.tsx
-│ ├── index.css
-│ ├── index.tsx
-│ ├── react-app-env.d.ts
-│ ├── reportWebVitals.ts
-│ ├── setupTests.ts
-│ ├── api/
-│ │ └── api.ts
-│ ├── components/
-│ │ ├── App.module.css
-│ │ ├── admin/
-│ │ │ ├── AdminDashboard.module.css
-│ │ │ └── AdminDashboard.tsx
-│ │ ├── common/
-│ │ │ ├── CategorySelect.tsx
-│ │ │ ├── IngredientSearch.module.css
-│ │ │ ├── IngredientSearch.tsx
-│ │ │ ├── IngredientTag.tsx
-│ │ │ ├── RecipeCard.module.css
-│ │ │ └── RecipeCard.tsx
-│ │ ├── feature/
-│ │ │ ├── recipeAdd/
-│ │ │ │ ├── PlaylistBulkAdd.tsx
-│ │ │ │ └── ThumnailInput.tsx
-│ │ │ └── recipeDetail/
-│ │ ├── layout/
-│ │ │ ├── BottomNavigationbar.tsx
-│ │ │ └── Header.tsx
-│ │ └── pages/
-│ │ ├── HomeSection.tsx
-│ │ ├── RecipeAddSection.module.css
-│ │ ├── RecipeAddSection.tsx
-│ │ ├── RecipeDetailSection.module.css
-│ │ ├── RecipeDetailSection.tsx
-│ │ ├── RecipeListSection.module.css
-│ │ ├── RecipeListSection.tsx
-│ │ ├── RecipeSuggestSection.module.css
-│ │ └── RecipeSuggestSection.tsx
-│ └── types/
-│ └── models.ts
-
+│       │       ├── RecipeSuggestSection.tsx
+│       │       └── RecipeUpdateSection.tsx
+│       ├── hooks/
+│       │   └── useRecipeFormData.ts
+│       ├── types/
+│       │   └── models.ts
+│       └── utils/
+│           ├── typeConverters.ts
+│           ├── validation.ts
+│           └── youtubeData.ts
 # 主な機能
 
 - レシピ一覧・詳細表示

@@ -18,6 +18,7 @@ interface RecipeFormProps {
   tags: { id: number; name: string }[];
   youtubeChannels: { id: number; name: string }[];
   editMode?: boolean;
+  urlerror?: string;
 }
 
 export default function RecipeForm(props: RecipeFormProps) {
@@ -60,18 +61,23 @@ export default function RecipeForm(props: RecipeFormProps) {
     e.preventDefault();
     await props.onSubmit(values);
   };
+  
+  // フォームエラー表示コンポーネント
+  const FormError = ({ message }: { message?: string }) =>
+    message ? (
+      <div className="flex items-center text-red-500 text-sm mt-1">
+        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" />
+        </svg>
+        {message}
+      </div>
+    ) : null;
 
   return (
     <form
       onSubmit={handleSubmit}
       className="bg-orange-100 px-2 py-1 rounded-lg border-2 border-orange-400 outline-none mt-3 max-w-lg"
     >
-      {/* エラー表示 */}
-      {props.errors.name && <div className="text-red-500 text-xl">{props.errors.name}</div>}
-      {props.errors.youtubeUrl && <div className="text-red-500 text-xl">{props.errors.youtubeUrl}</div>}
-      {props.errors.thumbnail && <div className="text-red-500 text-xl">{props.errors.thumbnail}</div>}
-      {props.errors.ingredients && <div className="text-red-500 text-xl">{props.errors.ingredients}</div>}
-      {props.errors.category && <div className="text-red-500 text-xl">{props.errors.category}</div>}
       {/* YouTube URL */}
       <div className="mb-1">
         <div className="flex items-center justify-between">
@@ -96,8 +102,10 @@ export default function RecipeForm(props: RecipeFormProps) {
           className="bg-white rounded-md w-full p-1.5 common-border-orange text-sm"
           placeholder="URLをコピーするとサムネイルとレシピ名は自動で入るよ"
         />
+        <FormError message={props.errors.youtubeUrl} />
+        <FormError message={props.urlerror} />
       </div>
-      {props.errors.url && <div className="text-red-500 text-sm mb-1">{props.errors.url}</div>}
+
 
       {/* レシピ名 */}
       <div>
@@ -112,10 +120,12 @@ export default function RecipeForm(props: RecipeFormProps) {
             className="bg-white rounded-md w-full mt-1 p-1.5 border common-border-orange "
           />
         </label>
+        <FormError message={props.errors.name} />
       </div>
       {/* サムネイル */}
       <div>
         <ThumbnailInput youtubeUrl={values.url} onChange={handleThumbnailChange} />
+        <FormError message={props.errors.thumbnail} />
       </div>
       {/* 食材選択 */}
       <IngredientSearch
@@ -173,6 +183,9 @@ export default function RecipeForm(props: RecipeFormProps) {
       >
         {props.editMode ? '更新する' : 'レシピを追加する'}
       </button>
+      {/* エラー表示（食材 or カテゴリのみボタン↓ */}
+      <FormError message={props.errors.ingredients} />
+      <FormError message={props.errors.category} />
       {/* タグ選択モーダル */}
       <TagSelect
         open={tagSelectOpen}

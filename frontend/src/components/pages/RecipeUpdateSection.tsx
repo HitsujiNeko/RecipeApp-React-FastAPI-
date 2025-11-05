@@ -12,6 +12,7 @@ interface RecipeUpdateSectionProps {
   recipe: RecipeModel;
   recipeId: number;
 	existingRecipes: RecipeModel[];
+	refetchRecipes?: () => void;
 }
 export default function RecipeUpdateSection(props: RecipeUpdateSectionProps) {
 	// 1. useStateでフォーム値・エラー・ローディング状態を管理

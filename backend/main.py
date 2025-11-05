@@ -305,7 +305,7 @@ def fetch_youtube_playlist(playlist_url: str = Body(..., embed=True), session: S
             "videoId": snippet["resourceId"]["videoId"],
             "title": snippet["title"],
             "description": snippet.get("description", ""),
-            "thumbnail": snippet["thumbnails"]["default"]["url"],
+            "thumbnail": snippet["thumbnails"]["medium"]["url"],
             "url": f"https://www.youtube.com/watch?v={snippet['resourceId']['videoId']}",
             "channelTitle": snippet.get("channelTitle", ""),
             "channelIcon": channel_icon_url,
@@ -316,27 +316,44 @@ def fetch_youtube_playlist(playlist_url: str = Body(..., embed=True), session: S
 
 
 
-
 @app.post("/api/recipes/bulk")
 def bulk_add_recipes(recipes: List[RecipeCreateRequest], session: Session = Depends(get_session)):
-    for req in recipes:
-        recipe = Recipe(
-            name=req.name,
-            url=req.url,
-            thumbnail=req.thumbnail,
-            notes=req.notes,
-            category_id=req.category_id,
-            youtube_channel_id=req.youtube_channel_id,
-            tags=req.tags,
-        )
-        if req.ingredient_ids:
-            ingredients = session.exec(select(Ingredient)).all()
-            recipe.ingredients = [ing for ing in ingredients if ing.id in req.ingredient_ids]
-        session.add(recipe)
-    session.commit()
-    return {"count": len(recipes)}
+    results = []
+    errors = []
+    for i, req in enumerate(recipes):
+        try:
+            recipe = Recipe(
+                name=req.name,
+                url=req.url,
+                thumbnail=req.thumbnail,
+                notes=req.notes,
+                category_id=req.category_id,
+                youtube_channel_id=req.youtube_channel_id,
+            )
+            # タグの関連付け
+            if req.tag_ids:
+                recipe.tags = [session.get(RecipeTag, tag_id) for tag_id in req.tag_ids if session.get(RecipeTag, tag_id)]
+            # 食材の関連付け
+            if req.ingredient_ids:
+                recipe.ingredients = [session.get(Ingredient, ing_id) for ing_id in req.ingredient_ids if session.get(Ingredient, ing_id)]
+            session.add(recipe)
+            session.commit()
+            session.refresh(recipe)
+            results.append(recipe)
+        except Exception as e:
+            session.rollback()
+            errors.append({"index": i, "error": str(e)})
+            print(f"Error adding recipe at index {i}: {e}")
+    if errors:
+        raise HTTPException(status_code=400, detail=errors)
+    return results
 
+
+###
 ## Update (更新)  PUTメソッド
+###
+
+
 @app.put("/api/ingredients/{ingredient_id}")
 def update_ingredient(ingredient_id: int, updated: Ingredient, session: Session = Depends(get_session)):
     ingredient = session.get(Ingredient, ingredient_id)  # GETメソッドで取得

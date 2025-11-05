@@ -13,29 +13,14 @@ import AdminDashboard from "./components/admin/AdminDashboard";
 import PlaylistBulkAddSection from "./components/pages/PlaylistBulkAddSection";
 import RecipeUpdateSection from "./components/pages/RecipeUpdateSection";
 import { RecipeModel } from "./types/models";
-import { fetchRecipes } from "./api/api";
+import { useRecipes } from "./hooks/useRecipes";
 
 
 function App() {
-  const [nav, setNav] = useState("suggest");
+  const [nav, setNav] = useState("home");
   const [selectedRecipeId, setSelectedRecipeId] = useState<number | null>(null);
-  // 初期レシピ一覧取得（レシピ数が1000件を超えるようならページネーション等検討）
-  const [recipes, setRecipes] = useState<RecipeModel[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { recipes, loading, error, refetchRecipes } = useRecipes();
 
-  useEffect(() => {
-    fetchRecipes()
-      .then((data) => {
-        setRecipes(data);
-      })
-      .catch((error) => {
-        setError("レシピ一覧の取得に失敗しました");
-      });
-    setLoading(false);
-  }, []);
-
-  // navigateToPlaylistイベントでSPA遷移
   useEffect(() => {
     const handler = () => setNav("playlist");
     window.addEventListener("navigateToPlaylist", handler);
@@ -53,7 +38,7 @@ function App() {
                 />;
       break;
     case "add":
-      content = <RecipeAddSection />;
+      content = <RecipeAddSection refetchRecipes={refetchRecipes} />;
       break;
     case "list":
       content = <RecipeListSection 
@@ -64,6 +49,7 @@ function App() {
                     setSelectedRecipeId(id);
                     setNav("detail")
                   }} 
+                  refetchRecipes={refetchRecipes}
                  />;
       break;
     case "detail":
@@ -72,6 +58,7 @@ function App() {
           recipeId={ selectedRecipeId }
           setNav={setNav}
           setSelectedRecipeId={setSelectedRecipeId}
+          refetchRecipes={refetchRecipes}
         />
       ) : (
         <div className="text-red-500 text-3xl font-bold">レシピが選択されていません</div>
@@ -84,7 +71,7 @@ function App() {
       content = <AdminDashboard />;
       break;
     case "playlist":
-      content = <PlaylistBulkAddSection />;
+      content = <PlaylistBulkAddSection recipes={recipes} refetchRecipes={refetchRecipes}/>;
       break;
     case "update":
       content = selectedRecipeId !== null ? (
@@ -92,6 +79,7 @@ function App() {
           recipeId={ selectedRecipeId }
           recipe={ recipes.find(r => r.id === selectedRecipeId)! }
           existingRecipes={ recipes }
+          refetchRecipes={refetchRecipes}
         />
       ) : (
         <div className="text-red-500 text-3xl font-bold">レシピが選択されていません</div>

@@ -14,8 +14,13 @@ import RecipeForm from "../feature/recipeForm/RecipeForm";
 import { validateRecipeForm } from "../../utils/validation";
 import { fetchAndParseYoutubeData } from "../../utils/youtubeData";
 import { useRecipeFormData } from "../../hooks/useRecipeFormData";
+import Loading from "../common/Loading";
 
-export default function RecipeAddSection() {
+type RecipeAddSectionProps = {
+  refetchRecipes?: () => void;
+};
+
+export default function RecipeAddSection( { refetchRecipes }: RecipeAddSectionProps) {
   const [urlError, setUrlError] = useState<string>("");
   const [channelData, setChannelData] = useState<YouTubeChannelModel | null>(null);
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
@@ -73,7 +78,6 @@ export default function RecipeAddSection() {
     if (initialValues.url && ingredients.length > 0) {
       fetchAndSetYoutubeData(initialValues.url);
     }
-    // eslint-disable-next-line
   }, [initialValues.url]);
 
   const handleFormSubmit = async (values: RecipeCreateRequest) => {
@@ -85,6 +89,9 @@ export default function RecipeAddSection() {
       await addRecipe(values);
       //  ここはあとで　表示の仕方を考える（デザイン）
       alert("レシピを追加しました！");
+      if (refetchRecipes) {
+        refetchRecipes();
+      }
       // フォームリセット
       setInitialValues({
         name: "",
@@ -108,13 +115,8 @@ export default function RecipeAddSection() {
   const handleUrlChange = (url: string) => {
     setInitialValues((prev) => ({ ...prev, url }));
   };
-  if (loading) 
-    return (
-      <div className="flex justify-center items-center h-64">
-        <span className="animate-spin rounded-full border-4 border-orange-400 border-t-transparent w-10 h-10 mr-3"></span>
-        <span className="text-orange-500 text-3xl font-bold ml-3">読み込み中...</span>
-      </div>
-  );
+
+  if (loading) return <Loading />;
   if (ingredients.length === 0 || categories.length === 0) {
     return <div>食材またはカテゴリが登録されていません。先に登録してください。</div>;
   }
@@ -151,6 +153,7 @@ export default function RecipeAddSection() {
         errors={formErrors}
         loading={loading}
         onUrlChange={handleUrlChange}
+        urlerror={urlError}
       />
     </section>
   );

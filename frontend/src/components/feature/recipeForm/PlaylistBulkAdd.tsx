@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { bulkAddRecipes } from "../../../api/api";
-import { IngredientModel, CategoryModel } from "../../../types/models";
-import IngredientSearch from "../../common/IngredientSearch";
+import { IngredientModel, CategoryModel ,RecipeTagModel, RecipeModel, RecipeCreateRequest } from "../../../types/models";
+import PlaylistBulkAddRow from "./PlaylistBulkAddRow";
+import { validateRecipeForm } from "../../../utils/validation";
 
 type VideoData = {
   videoId: string;
@@ -19,11 +20,14 @@ type PlaylistBulkAddProps = {
   videos: VideoData[];
   ingredients: IngredientModel[];
   categories: CategoryModel[];
+  tags: RecipeTagModel[];
+  existingRecipes : RecipeModel[];
 };
 
-export default function PlaylistBulkAdd({ videos, ingredients, categories }: PlaylistBulkAddProps) {
+export default function PlaylistBulkAdd({ videos, ingredients, categories ,tags, existingRecipes}: PlaylistBulkAddProps) {
   const [rows, setRows] = useState<any[]>([]);
   const [selected, setSelected] = useState<boolean[]>([]);
+  const [errors, setErrors] = useState<{[key: number]: string}>({});
 
   // 説明文から食材IDリストを抽出する関数
   function extractIngredientIds(desc: string): number[] {
@@ -34,6 +38,14 @@ export default function PlaylistBulkAdd({ videos, ingredients, categories }: Pla
     }
     return ids;
   }
+  // 1行分の編集ハンドラ
+  const handleRowChange = (i: number, key: string, value: any) => {
+    setRows((prev) =>
+      prev.map((row, idx) => (idx === i ? { ...row, [key]: value } : row))
+    );
+  };
+
+  
 
   // videosが変わったら編集用rows/selectedを初期化
   useEffect(() => {
@@ -50,146 +62,101 @@ export default function PlaylistBulkAdd({ videos, ingredients, categories }: Pla
         notes: "",
         ingredientIds: extractIngredientIds(v.description),
         categoryId: categories[0]?.id || null,
+        tagIds : [],
         youtube_channel_id: v.dbChannelId || null,
       }))
     );
     setSelected(videos.map(() => true));
   }, [videos, categories]);
 
-  // 編集ハンドラ
-  const handleRowChange = (i: number, key: string, value: any) => {
-    setRows((prev) =>
-      prev.map((row, idx) => (idx === i ? { ...row, [key]: value } : row))
-    );
-  };
-
   // 一括追加
   const handleBulkAdd = async () => {
-    const recipes = rows
-      .filter((_, i) => selected[i])
-      .map((row) => ({
+    // 既存レシピ一覧を取得
+    // バリデーション
+    const newErrors: {[key: number]: string} = {};
+    const validRecipes: RecipeCreateRequest[] = [];
+    rows.forEach((row, i) => {
+      if (!selected[i]) return;
+      const req: RecipeCreateRequest = {
         name: row.name,
         url: row.url,
         thumbnail: row.thumbnail,
         notes: row.notes,
         ingredient_ids: row.ingredientIds,
         category_id: row.categoryId,
+        tag_ids: row.tagIds,
         youtube_channel_id: row.youtube_channel_id || null,
-      }));
-    await bulkAddRecipes(recipes);
+      };
+
+      const err = validateRecipeForm(req, existingRecipes);
+      if (Object.keys(err).length > 0) {
+        // エラー内容をまとめて表示
+        newErrors[i] = Object.values(err).join("、");
+      } else {
+        validRecipes.push(req);
+      }
+    });
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      alert("入力エラーのある行があります。内容を確認してください。");
+      return;
+    }
+    if (validRecipes.length === 0) {
+      alert("追加可能なレシピがありません。");
+      return;
+    }
+    await bulkAddRecipes(validRecipes);
     alert("一括追加しました");
   };
 
   if (!rows.length) return null;
 
   return (
-    <div>
-      <table
-        border={1}
-        cellPadding={4}
-        style={{ marginTop: 16, minWidth: 900 }}
+    <div className="flex flex-col gap-4">
+      {rows.map((row, i) => (
+        <div key={i} className="relative ">
+          <div className="absolute right-0 top-0">
+            <input
+              type="checkbox"
+              checked={selected[i]}
+              onChange={e => {
+                const newSelected = [...selected];
+                newSelected[i] = e.target.checked;
+                setSelected(newSelected);
+              }}
+              className="w-6 h-6 accent-orange-500 mt-4 mr-2"
+            />
+          </div>
+          <div className="p-1">
+            <PlaylistBulkAddRow
+              row={row}
+              index={i}
+              categories={categories}
+              ingredients={ingredients}
+              tags={tags}
+              onChange={handleRowChange}
+            />
+          </div>
+        </div>
+      ))}
+      <button
+        onClick={handleBulkAdd}
+        className="w-full bg-orange-500 text-white font-bold py-3 rounded-lg mt-4 text-lg"
       >
-        <thead>
-          <tr>
-            <th>選択</th>
-            <th>レシピ名</th>
-            <th>サムネイル</th>
-            <th>食材</th>
-            <th>カテゴリ</th>
-            <th>メモ</th>
-            <th>URL</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, i) => (
-            <tr key={videos[i]?.videoId || i}>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={selected[i]}
-                  onChange={() =>
-                    setSelected((sel) =>
-                      sel.map((s, idx) => (idx === i ? !s : s))
-                    )
-                  }
-                />
-              </td>
-              <td>
-                <input
-                  type="text"
-                  value={row.name}
-                  onChange={(e) =>
-                    handleRowChange(i, "name", e.target.value)
-                  }
-                  style={{ width: 160 }}
-                />
-              </td>
-              <td>
-                <input
-                  type="text"
-                  value={row.thumbnail}
-                  onChange={(e) =>
-                    handleRowChange(i, "thumbnail", e.target.value)
-                  }
-                  style={{ width: 180 }}
-                />
-                <div>
-                  <img src={row.thumbnail} alt="thumb" width={80} />
-                </div>
-              </td>
-              <td style={{ minWidth: 180 }}>
-                <IngredientSearch
-                  selectedIds={row.ingredientIds}
-                  onChange={(ids) =>
-                    handleRowChange(i, "ingredientIds", ids)
-                  }
-                  ingredients={ingredients}
-                />
-              </td>
-              <td>
-                <select
-                  value={row.categoryId || ""}
-                  onChange={(e) =>
-                    handleRowChange(
-                      i,
-                      "categoryId",
-                      Number(e.target.value)
-                    )
-                  }
-                >
-                  <option value="">選択</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-              </td>
-              <td>
-                <textarea
-                  value={row.notes}
-                  onChange={(e) =>
-                    handleRowChange(i, "notes", e.target.value)
-                  }
-                  style={{ width: 140 }}
-                />
-              </td>
-              <td>
-                <a
-                  href={row.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  動画
-                </a>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <button onClick={handleBulkAdd} style={{ marginTop: 16 }}>
         一括追加
       </button>
+      {Object.keys(errors).length > 0 && (
+        <div className="bg-red-100 border border-red-400 text-red-700 p-4 rounded-lg">
+          <h3 className="font-bold mb-2">エラー一覧</h3>
+          <ul className="list-disc list-inside">
+            {Object.entries(errors).map(([index, message]) => (
+              <li key={index}>
+                {`行 ${Number(index) + 1}: ${message}`}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

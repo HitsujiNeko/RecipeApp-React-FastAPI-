@@ -1,12 +1,12 @@
 const HEADER_SECTION = [
   { key: "suggest", label: "Recipe Search" },
-  { key: "add", label: "RecipeAdd" },
+  { key: "add", label: "Recipe Add" },
   { key: "list", label: "RecipeList" },
   { key: "home", label: "HOME" },
-  { key: "detail", label: "レシピを見る" },
-  { key: "admin", label: "管理ダッシュボード" },
-  { key: "playlist", label: "RecipeAdd" },
-  { key: "update", label: "RecipeUpdate" },
+  { key: "detail", label: "Recipe Card" },
+  { key: "admin", label: "Admin" },
+  { key: "playlist", label: "Recipe Add" },
+  { key: "update", label: "Recipe Update" },
 ];
 
 type HeaderSectionProps = {
