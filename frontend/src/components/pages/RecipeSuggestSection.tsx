@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { fetchRecipes } from "../../api/api";
 import IngredientSearch from "../common/IngredientSearch";
 import CategorySelect from "../common/CategorySelect";
@@ -16,7 +16,7 @@ export default function RecipeSuggestSection({
 }) {
   const [selectedIngredients, setSelectedIngredients] = useState<number[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [selectedTag, setSelectedTag] = useState<number[]| null>(null);
+  const [selectedTag, setSelectedTag] = useState<number[] | null>(null);
   const [tagSelectOpen, setTagSelectOpen] = useState(false);
   const [searched, setSearched] = useState(false); // 検索済みフラグ
 
@@ -25,7 +25,7 @@ export default function RecipeSuggestSection({
   const [error, setError] = useState("");
 
   // フォーム用初期データ取得
-  const { ingredients, categories, tags, loading} = useRecipeFormData();
+  const { ingredients, categories, tags, loading } = useRecipeFormData();
 
   const resultsRef = useRef<HTMLDivElement>(null);
 
@@ -35,8 +35,7 @@ export default function RecipeSuggestSection({
         if (prev.includes(id)) {
           // すでに選択されている場合は、そのIDを除外（＝選択解除）
           return prev.filter((tagId) => tagId !== id);
-        }
-        else {
+        } else {
           // まだ選択されていない場合は、IDを追加（＝選択）
           return [...prev, id];
         }
@@ -68,10 +67,8 @@ export default function RecipeSuggestSection({
     }
     setSearchLoading(false);
   };
-  if (loading) 
-    return <Loading />;
+  if (loading) return <Loading />;
   return (
-    
     <section>
       <div className="">
         <div className="">
@@ -101,18 +98,13 @@ export default function RecipeSuggestSection({
               {selectedTag ? (
                 tags
                   .filter((tag) => selectedTag?.includes(tag.id))
-                  .map((tag) =>
-               <RecipeTag key={tag.id} recipeTag={tag} />)
+                  .map((tag) => <RecipeTag key={tag.id} recipeTag={tag} />)
               ) : (
                 <span className="text-gray-400">未選択</span>
               )}
             </div>
           </div>
-          <button
-            className="w-full"
-            onClick={handleSearch}
-            disabled={loading}
-          >
+          <button className="w-full" onClick={handleSearch} disabled={loading}>
             検索
           </button>
         </div>
@@ -134,21 +126,36 @@ export default function RecipeSuggestSection({
                     />
                   ))}
                 </div>
-
               </div>
             ) : (
               // 検索済みで0件
               <div className="flex flex-col items-center justify-center h-56 bg-orange-50 rounded-lg border border-orange-200 shadow-inner">
-                <svg className="w-12 h-12 text-orange-300 mb-2" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" />
+                <svg
+                  className="w-12 h-12 text-orange-300 mb-2"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 9v2m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"
+                  />
                 </svg>
-                <div className="text-lg font-semibold text-orange-600 mb-1">検索結果がありません</div>
-                <div className="text-sm text-orange-400">条件を変えて再度お試しください</div>
+                <div className="text-lg font-semibold text-orange-600 mb-1">
+                  検索結果がありません
+                </div>
+                <div className="text-sm text-orange-400">
+                  条件を変えて再度お試しください
+                </div>
               </div>
             )
           ) : (
             // 未検索時
-            <div className="text-gray-400 text-center py-8">条件を選んで「検索」してください</div>
+            <div className="text-gray-400 text-center py-8">
+              条件を選んで「検索」してください
+            </div>
           )}
         </div>
         <TagSelect

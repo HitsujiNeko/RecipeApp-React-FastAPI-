@@ -1,7 +1,11 @@
-// frontend/src/hooks/useRecipeFormData.ts
+// データ取得専用のカスタムフック
 import { useEffect, useState } from "react";
 import { fetchIngredients, fetchCategories, fetchRecipeTags } from "../api/api";
-import { IngredientModel, CategoryModel, RecipeTagModel } from "../types/models";
+import {
+  IngredientModel,
+  CategoryModel,
+  RecipeTagModel,
+} from "../types/models";
 
 export function useRecipeFormData() {
   const [ingredients, setIngredients] = useState<IngredientModel[]>([]);

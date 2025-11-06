@@ -1,14 +1,10 @@
-
 import { useState, useEffect } from "react";
-import { 
-  addRecipe, 
-  fetchRecipes
-  } from "../../api/api";
-import { 
-        RecipeModel, 
-        YouTubeChannelModel , 
-        RecipeCreateRequest 
-      } from "../../types/models";
+import { addRecipe, fetchRecipes } from "../../api/api";
+import {
+  RecipeModel,
+  YouTubeChannelModel,
+  RecipeCreateRequest,
+} from "../../types/models";
 
 import RecipeForm from "../feature/recipeForm/RecipeForm";
 import { validateRecipeForm } from "../../utils/validation";
@@ -17,14 +13,19 @@ import { useRecipeFormData } from "../../hooks/useRecipeFormData";
 import Loading from "../common/Loading";
 
 type RecipeAddSectionProps = {
+  existingRecipes?: RecipeModel[];
   refetchRecipes?: () => void;
 };
 
-export default function RecipeAddSection( { refetchRecipes }: RecipeAddSectionProps) {
+export default function RecipeAddSection({
+  existingRecipes,
+  refetchRecipes,
+}: RecipeAddSectionProps) {
   const [urlError, setUrlError] = useState<string>("");
-  const [channelData, setChannelData] = useState<YouTubeChannelModel | null>(null);
+  const [channelData, setChannelData] = useState<YouTubeChannelModel | null>(
+    null
+  );
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
-  const [existingRecipes, setExistingRecipes] = useState<RecipeModel[]>([]);
   // フォーム用初期データ取得
   const { ingredients, categories, tags, loading } = useRecipeFormData();
   const [formSubmitting, setFormSubmitting] = useState(false);
@@ -42,11 +43,6 @@ export default function RecipeAddSection( { refetchRecipes }: RecipeAddSectionPr
     youtube_channel_id: null,
   });
 
-
-  useEffect(() => {
-    fetchRecipes().then(setExistingRecipes);
-  }, []);
-
   // categoriesが取得できたらcategory_idを初期値にセット（初回のみ）
   useEffect(() => {
     if (categories.length > 0) {
@@ -62,7 +58,13 @@ export default function RecipeAddSection( { refetchRecipes }: RecipeAddSectionPr
     const result = await fetchAndParseYoutubeData(url, ingredients);
     if (result.error) {
       setUrlError(result.error);
-      setInitialValues((prev) => ({ ...prev, name: "", ingredient_ids: [], youtube_channel_id: null, thumbnail: "" }));
+      setInitialValues((prev) => ({
+        ...prev,
+        name: "",
+        ingredient_ids: [],
+        youtube_channel_id: null,
+        thumbnail: "",
+      }));
       setChannelData(null);
       return;
     }
@@ -81,7 +83,7 @@ export default function RecipeAddSection( { refetchRecipes }: RecipeAddSectionPr
   }, [initialValues.url]);
 
   const handleFormSubmit = async (values: RecipeCreateRequest) => {
-    const errors = validateRecipeForm(values, existingRecipes);
+    const errors = validateRecipeForm(values, existingRecipes ?? []);
     setFormErrors(errors);
     if (Object.keys(errors).length > 0) return;
     setFormSubmitting(true);
@@ -118,7 +120,9 @@ export default function RecipeAddSection( { refetchRecipes }: RecipeAddSectionPr
 
   if (loading) return <Loading />;
   if (ingredients.length === 0 || categories.length === 0) {
-    return <div>食材またはカテゴリが登録されていません。先に登録してください。</div>;
+    return (
+      <div>食材またはカテゴリが登録されていません。先に登録してください。</div>
+    );
   }
   if (formSubmitting) return <div>送信中...</div>;
   return (
@@ -133,7 +137,9 @@ export default function RecipeAddSection( { refetchRecipes }: RecipeAddSectionPr
           className="inline-block bg-orange-500 text-white font-bold px-4 py-2 rounded hover:bg-orange-600 transition-colors border border-orange-600"
           onClick={() => {
             // App.tsxのsetNavを使うため、カスタムイベントで親に通知
-            const event = new CustomEvent("navigateToPlaylist", { bubbles: true });
+            const event = new CustomEvent("navigateToPlaylist", {
+              bubbles: true,
+            });
             window.dispatchEvent(event);
           }}
         >

@@ -15,7 +15,6 @@ import RecipeUpdateSection from "./components/pages/RecipeUpdateSection";
 import { RecipeModel } from "./types/models";
 import { useRecipes } from "./hooks/useRecipes";
 
-
 function App() {
   const [nav, setNav] = useState("home");
   const [selectedRecipeId, setSelectedRecipeId] = useState<number | null>(null);
@@ -30,39 +29,51 @@ function App() {
   let content;
   switch (nav) {
     case "suggest":
-      content = <RecipeSuggestSection 
-                    onRecipeClick={(id) =>{
-                      setSelectedRecipeId(id);
-                      setNav("detail")
-                    }} 
-                />;
+      content = (
+        <RecipeSuggestSection
+          onRecipeClick={(id) => {
+            setSelectedRecipeId(id);
+            setNav("detail");
+          }}
+        />
+      );
       break;
     case "add":
-      content = <RecipeAddSection refetchRecipes={refetchRecipes} />;
-      break;
-    case "list":
-      content = <RecipeListSection 
-                  recipes={recipes}
-                  loading={loading}
-                  error={error}
-                  onRecipeClick={(id) =>{
-                    setSelectedRecipeId(id);
-                    setNav("detail")
-                  }} 
-                  refetchRecipes={refetchRecipes}
-                 />;
-      break;
-    case "detail":
-      content = selectedRecipeId !== null ? (
-        <RecipeDetailSection 
-          recipeId={ selectedRecipeId }
-          setNav={setNav}
-          setSelectedRecipeId={setSelectedRecipeId}
+      content = (
+        <RecipeAddSection
+          existingRecipes={recipes}
           refetchRecipes={refetchRecipes}
         />
-      ) : (
-        <div className="text-red-500 text-3xl font-bold">レシピが選択されていません</div>
       );
+      break;
+    case "list":
+      content = (
+        <RecipeListSection
+          recipes={recipes}
+          loading={loading}
+          error={error}
+          onRecipeClick={(id) => {
+            setSelectedRecipeId(id);
+            setNav("detail");
+          }}
+          refetchRecipes={refetchRecipes}
+        />
+      );
+      break;
+    case "detail":
+      content =
+        selectedRecipeId !== null ? (
+          <RecipeDetailSection
+            recipeId={selectedRecipeId}
+            setNav={setNav}
+            setSelectedRecipeId={setSelectedRecipeId}
+            refetchRecipes={refetchRecipes}
+          />
+        ) : (
+          <div className="text-red-500 text-3xl font-bold">
+            レシピが選択されていません
+          </div>
+        );
       break;
     case "home":
       content = <HomeSection setNav={setNav} />;
@@ -71,27 +82,37 @@ function App() {
       content = <AdminDashboard />;
       break;
     case "playlist":
-      content = <PlaylistBulkAddSection recipes={recipes} refetchRecipes={refetchRecipes}/>;
-      break;
-    case "update":
-      content = selectedRecipeId !== null ? (
-        <RecipeUpdateSection
-          recipeId={ selectedRecipeId }
-          recipe={ recipes.find(r => r.id === selectedRecipeId)! }
-          existingRecipes={ recipes }
+      content = (
+        <PlaylistBulkAddSection
+          recipes={recipes}
           refetchRecipes={refetchRecipes}
         />
-      ) : (
-        <div className="text-red-500 text-3xl font-bold">レシピが選択されていません</div>
       );
       break;
+    case "update":
+      content =
+        selectedRecipeId !== null ? (
+          <RecipeUpdateSection
+            recipeId={selectedRecipeId}
+            recipe={recipes.find((r) => r.id === selectedRecipeId)!}
+            existingRecipes={recipes}
+            refetchRecipes={refetchRecipes}
+          />
+        ) : (
+          <div className="text-red-500 text-3xl font-bold">
+            レシピが選択されていません
+          </div>
+        );
+      break;
     default:
-      content = <RecipeSuggestSection 
-                  onRecipeClick={(id) =>{
-                    setSelectedRecipeId(id);
-                    setNav("detail")
-                  }} 
-                />;
+      content = (
+        <RecipeSuggestSection
+          onRecipeClick={(id) => {
+            setSelectedRecipeId(id);
+            setNav("detail");
+          }}
+        />
+      );
   }
 
   return (

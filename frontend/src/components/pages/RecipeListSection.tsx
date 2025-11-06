@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { deleteRecipe } from "../../api/api";
-import { RecipeModel, CategoryModel } from "../../types/models";
+import { RecipeModel } from "../../types/models";
 import Loading from "../common/Loading";
-import RecipeCard from "../common/RecipeCard";  
+import RecipeCard from "../common/RecipeCard";
 
 interface RecipeListSectionProps {
   recipes: RecipeModel[];
@@ -15,15 +15,19 @@ interface RecipeListSectionProps {
 // 選択ボタンを押すと、レシピを選択（複数可能）できるようにする
 // 選択されたレシピは、まとめて削除やタグ付けができるようにする
 
-
-export default function RecipeListSection({recipes, loading, error, onRecipeClick, refetchRecipes}: RecipeListSectionProps) {
-
+export default function RecipeListSection({
+  recipes,
+  loading,
+  error,
+  onRecipeClick,
+  refetchRecipes,
+}: RecipeListSectionProps) {
   const [selectRecipe, setSelectRecipe] = useState<number[]>([]);
   const [selectMode, setSelectMode] = useState<boolean>(false);
 
   const handleSelect = (id: number) => {
     if (selectRecipe.includes(id)) {
-      setSelectRecipe(selectRecipe.filter(rid => rid !== id));
+      setSelectRecipe(selectRecipe.filter((rid) => rid !== id));
     } else {
       setSelectRecipe([...selectRecipe, id]);
     }
@@ -34,7 +38,12 @@ export default function RecipeListSection({recipes, loading, error, onRecipeClic
       alert("削除するレシピが選択されていません");
       return;
     }
-    if (!window.confirm(`選択された ${selectRecipe.length} 件のレシピを本当に削除しますか？`)) return;
+    if (
+      !window.confirm(
+        `選択された ${selectRecipe.length} 件のレシピを本当に削除しますか？`
+      )
+    )
+      return;
     for (const id of selectRecipe) {
       await deleteRecipe(id);
     }
@@ -46,7 +55,7 @@ export default function RecipeListSection({recipes, loading, error, onRecipeClic
     setSelectMode(false);
     alert("選択されたレシピを削除しました");
   };
-  
+
   if (loading) {
     return <Loading />;
   }
@@ -60,9 +69,14 @@ export default function RecipeListSection({recipes, loading, error, onRecipeClic
           <p className="mb-2">レシピ数：{recipes.length} 件</p>
           <div>
             {/* 選択機能を追加 */}
-            <button onClick= {() => { setSelectMode(!selectMode); setSelectRecipe([]);}}>
+            <button
+              onClick={() => {
+                setSelectMode(!selectMode);
+                setSelectRecipe([]);
+              }}
+            >
               {selectMode ? "選択モード終了" : "レシピ選択モードへ"}
-            </button> 
+            </button>
             {selectMode && (
               <div className="my-2">
                 <span>選択中のレシピ数: {selectRecipe.length} 件</span>
@@ -77,24 +91,23 @@ export default function RecipeListSection({recipes, loading, error, onRecipeClic
           </div>
           <div className="grid grid-cols-2  gap-4">
             {recipes.map((recipe) => (
-              <RecipeCard 
-                key={recipe.id} 
+              <RecipeCard
+                key={recipe.id}
                 recipe={recipe}
-                displayIngCat={true}  
+                displayIngCat={true}
                 onClick={() => {
                   if (selectMode) {
                     handleSelect(recipe.id);
                   } else {
-                  onRecipeClick(recipe.id)} 
+                    onRecipeClick(recipe.id);
+                  }
                 }}
                 selected={selectRecipe.includes(recipe.id)}
-                />
+              />
             ))}
           </div>
         </div>
       )}
-            
     </div>
   );
 }
-
