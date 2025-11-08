@@ -18,6 +18,18 @@ YouTube のレシピ動画を簡単に登録・整理・検索できるアプリ
 保存したレシピは、食材やカテゴリで絞り込み・検索でき、必要なレシピを素早く見つけられます。
 
 # デモ・スクリーンショット
+- ホーム画面
+<img width="400" height="736" alt="image" src="https://github.com/user-attachments/assets/2ecfb879-2eb6-4507-acbb-07de917620b1" />
+
+- デモ①：URLを入力するだけで簡単にレシピを登録できる！
+
+https://github.com/user-attachments/assets/1756cd68-ed0b-4e40-84e2-d1771db46216
+
+- デモ②： 食材・カテゴリで簡単に検索！
+
+https://github.com/user-attachments/assets/d3562fb4-28db-4c21-9034-4f1d1d1b587a
+
+
 
 # 目標
 
@@ -49,8 +61,15 @@ YouTube のレシピ動画の強みと弱み
   弱み：
 
 - レシピ管理が難しい（再生リスト機能はあるが、レシピ検索や食材別の整理ができない）
+
+  
 - 動画の中で使用されている食材を把握しづらい（開かないとわからない、概要欄に書かれていないことも多い）
+
 - レシピ動画の保存・整理が手間
+<img width="640" height="210" alt="image" src="https://github.com/user-attachments/assets/373c051f-ddea-4399-b4dc-3fdc53d20ad4" />
+
+
+- 
 
 解決する課題：
 
