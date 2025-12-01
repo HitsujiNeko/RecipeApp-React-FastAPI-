@@ -1,16 +1,8 @@
-import { useState, useEffect } from "react";
-import { addRecipe, fetchRecipes } from "../../api/api";
-import {
-  RecipeModel,
-  YouTubeChannelModel,
-  RecipeCreateRequest,
-} from "../../types/models";
-
+import { addRecipe } from "../../api/api";
+import { RecipeModel, RecipeCreateRequest } from "../../types/models";
 import RecipeForm from "../feature/recipeForm/RecipeForm";
-import { validateRecipeForm } from "../../utils/validation";
-import { fetchAndParseYoutubeData } from "../../utils/youtubeData";
-import { useRecipeFormData } from "../../hooks/useRecipeFormData";
 import Loading from "../common/Loading";
+import useRecipeFormController from "../../hooks/useRecipeFormController";
 
 type RecipeAddSectionProps = {
   existingRecipes?: RecipeModel[];
@@ -21,102 +13,47 @@ export default function RecipeAddSection({
   existingRecipes,
   refetchRecipes,
 }: RecipeAddSectionProps) {
-  const [urlError, setUrlError] = useState<string>("");
-  const [channelData, setChannelData] = useState<YouTubeChannelModel | null>(
-    null
-  );
-  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
-  // フォーム用初期データ取得
-  const { ingredients, categories, tags, loading } = useRecipeFormData();
-  const [formSubmitting, setFormSubmitting] = useState(false);
-  const defaultCategoryId = categories.length > 0 ? categories[0].id : 1;
-
-  // initialValuesを一元管理
-  const [initialValues, setInitialValues] = useState<RecipeCreateRequest>({
-    name: "",
-    url: "",
-    thumbnail: "",
-    notes: "",
-    ingredient_ids: [],
-    category_id: defaultCategoryId, // nullではなくnumber型
-    tag_ids: [],
-    youtube_channel_id: null,
-  });
-
-  // categoriesが取得できたらcategory_idを初期値にセット（初回のみ）
-  useEffect(() => {
-    if (categories.length > 0) {
-      setInitialValues((prev) => ({ ...prev, category_id: categories[0].id }));
-    }
-    // eslint-disable-next-line
-  }, [categories]);
-
-  // YouTube動画情報取得・自動入力（外部utilsに委譲）
-  const fetchAndSetYoutubeData = async (url: string) => {
-    if (!url || ingredients.length === 0) return;
-    setUrlError("");
-    const result = await fetchAndParseYoutubeData(url, ingredients);
-    if (result.error) {
-      setUrlError(result.error);
-      setInitialValues((prev) => ({
-        ...prev,
-        name: "",
-        ingredient_ids: [],
-        youtube_channel_id: null,
-        thumbnail: "",
-      }));
-      setChannelData(null);
-      return;
-    }
-    if (result.initialValues) {
-      setInitialValues((prev) => ({ ...prev, ...result.initialValues }));
-      setChannelData(result.channelData || null);
-    }
-  };
-
-  // YouTube URL変更時に自動取得
-  useEffect(() => {
-    // ingredientsが取得済み、かつURLが空でなければfetch
-    if (initialValues.url && ingredients.length > 0) {
-      fetchAndSetYoutubeData(initialValues.url);
-    }
-  }, [initialValues.url]);
-
-  const handleFormSubmit = async (values: RecipeCreateRequest) => {
-    const errors = validateRecipeForm(values, existingRecipes ?? []);
-    setFormErrors(errors);
-    if (Object.keys(errors).length > 0) return;
-    setFormSubmitting(true);
-    try {
-      await addRecipe(values);
-      //  ここはあとで　表示の仕方を考える（デザイン）
-      alert("レシピを追加しました！");
-      if (refetchRecipes) {
-        refetchRecipes();
+  const {
+    ingredients,
+    categories,
+    tags,
+    loading,
+    initialValues,
+    setInitialValues,
+    formErrors,
+    urlError,
+    handleUrlChange,
+    handleSubmit,
+    channelData,
+    formSubmitting,
+    resetForm,
+  } = useRecipeFormController({
+    mode: "add",
+    initialRecipe: null,
+    existingRecipes: existingRecipes ?? [],
+    onSubmit: async (values: RecipeCreateRequest) => {
+      try {
+        await addRecipe(values);
+        alert("レシピを追加しました！");
+        if (refetchRecipes) refetchRecipes();
+        // リセット: initialValues をデフォルトに戻す
+        setInitialValues({
+          name: "",
+          url: "",
+          thumbnail: "",
+          notes: "",
+          ingredient_ids: [],
+          category_id: categories.length > 0 ? categories[0].id : 1,
+          tag_ids: [],
+          youtube_channel_id: null,
+        });
+        resetForm();
+      } catch (e) {
+        console.error("レシピの追加に失敗しました", e);
+        alert("レシピの追加に失敗しました");
       }
-      // フォームリセット
-      setInitialValues({
-        name: "",
-        url: "",
-        thumbnail: "",
-        notes: "",
-        ingredient_ids: [],
-        category_id: defaultCategoryId,
-        tag_ids: [],
-        youtube_channel_id: null,
-      });
-      setChannelData(null);
-    } catch (e) {
-      console.error("レシピの追加に失敗しました", e);
-      alert("レシピの追加に失敗しました");
-    }
-    setFormSubmitting(false);
-  };
-
-  // RecipeFormからのYouTube URL変更を親のinitialValuesに反映
-  const handleUrlChange = (url: string) => {
-    setInitialValues((prev) => ({ ...prev, url }));
-  };
+    },
+  });
 
   if (loading) return <Loading />;
   if (ingredients.length === 0 || categories.length === 0) {
@@ -155,7 +92,7 @@ export default function RecipeAddSection({
         categories={categories}
         youtubeChannels={channelData ? [channelData] : []}
         tags={tags}
-        onSubmit={handleFormSubmit}
+        onSubmit={handleSubmit}
         errors={formErrors}
         loading={loading}
         onUrlChange={handleUrlChange}

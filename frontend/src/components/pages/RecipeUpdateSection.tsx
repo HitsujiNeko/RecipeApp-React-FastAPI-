@@ -1,11 +1,8 @@
-import { useState } from "react";
+// no local state required; controller hook manages form state
 import { RecipeModel, RecipeCreateRequest } from "../../types/models";
-import { validateRecipeForm } from "../../utils/validation";
-import { fetchAndParseYoutubeData } from "../../utils/youtubeData";
 import RecipeForm from "../feature/recipeForm/RecipeForm";
-import { toRecipeCreateRequest } from "../../utils/typeConverters";
-import { useRecipeFormData } from "../../hooks/useRecipeFormData";
 import { updateRecipe } from "../../api/api";
+import useRecipeFormController from "../../hooks/useRecipeFormController";
 
 interface RecipeUpdateSectionProps {
   recipe: RecipeModel;
@@ -14,53 +11,27 @@ interface RecipeUpdateSectionProps {
   refetchRecipes?: () => void;
 }
 export default function RecipeUpdateSection(props: RecipeUpdateSectionProps) {
-  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
-  // 初期データ取得
-  const { ingredients, categories, tags, loading } = useRecipeFormData();
-  // props.recipeをRecipeCreateRequest型に変換して初期値セット
-  const [initialValues, setInitialValues] = useState<RecipeCreateRequest>(
-    toRecipeCreateRequest(props.recipe)
-  );
-
-  const [urlError, setUrlError] = useState<string>("");
-  const [channelData, setChannelData] = useState<null | any>(null);
-
-  // YouTube動画情報取得・自動入力
-  const fetchAndSetYoutubeData = async (url: string) => {
-    if (!url || ingredients.length === 0) return;
-    setUrlError("");
-    const result = await fetchAndParseYoutubeData(url, ingredients);
-    if (result.error) {
-      setUrlError(result.error);
-      setChannelData(null);
-      return;
-    }
-    if (result.initialValues) {
-      setInitialValues((prev) => ({ ...prev, ...result.initialValues }));
-      setChannelData(result.channelData || null);
-    }
-  };
-  // RecipeFormからのYouTube URL変更を更新ページに反映
-  const handleUrlChange = (url: string) => {
-    fetchAndSetYoutubeData(url);
-  };
-
-  // 送信ハンドラ
-  const handleSubmit = async (values: RecipeCreateRequest) => {
-    // バリデーション
-    const errors = validateRecipeForm(values, props.existingRecipes);
-    if (Object.keys(errors).length > 0) {
-      // エラーがあれば表示して終了
-      console.log("バリデーションエラー:", errors);
-      setFormErrors(errors);
-      return;
-    }
-    // API更新処理
-    await updateRecipe(props.recipeId, values);
-    // 更新後の処理
-    alert("レシピが更新されました");
-    // 詳細ぺージへ遷移するなどの処理を追加
-  };
+  const {
+    ingredients,
+    categories,
+    tags,
+    loading,
+    initialValues,
+    formErrors,
+    urlError,
+    handleUrlChange,
+    handleSubmit,
+    channelData,
+  } = useRecipeFormController({
+    mode: "update",
+    initialRecipe: props.recipe,
+    existingRecipes: props.existingRecipes,
+    onSubmit: async (values: RecipeCreateRequest) => {
+      await updateRecipe(props.recipeId, values);
+      alert("レシピが更新されました");
+      if (props.refetchRecipes) props.refetchRecipes();
+    },
+  });
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -76,7 +47,7 @@ export default function RecipeUpdateSection(props: RecipeUpdateSectionProps) {
         ingredients={ingredients}
         categories={categories}
         tags={tags}
-        youtubeChannels={[]} // YouTubeチャンネルは未実装のため空配列
+        youtubeChannels={channelData ? [channelData] : []}
         loading={loading}
         errors={formErrors}
         onSubmit={handleSubmit}

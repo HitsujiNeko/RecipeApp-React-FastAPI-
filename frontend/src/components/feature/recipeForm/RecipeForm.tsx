@@ -1,11 +1,10 @@
-
-import React, { useState, useEffect } from 'react';
-import { RecipeCreateRequest, IngredientModel } from '../../../types/models';
-import IngredientSearch from '../../common/IngredientSearch';
-import CategorySelect from '../../common/CategorySelect';
-import TagSelect from '../../common/TagSelect';
-import RecipeTag from '../../common/RecipeTag';
-import ThumbnailInput from './ThumbnailInput';
+import React, { useState, useEffect, useRef } from "react";
+import { RecipeCreateRequest, IngredientModel } from "../../../types/models";
+import IngredientSearch from "../../common/IngredientSearch";
+import CategorySelect from "../../common/CategorySelect";
+import TagSelect from "../../common/TagSelect";
+import RecipeTag from "../../common/RecipeTag";
+import ThumbnailInput from "./ThumbnailInput";
 
 interface RecipeFormProps {
   initialValues: RecipeCreateRequest;
@@ -23,20 +22,56 @@ interface RecipeFormProps {
 
 export default function RecipeForm(props: RecipeFormProps) {
   // フォーム値を一元管理
-  const [values, setValues] = useState<RecipeCreateRequest>(props.initialValues);
+  const [values, setValues] = useState<RecipeCreateRequest>(
+    props.initialValues
+  );
   // タグ選択モーダル
   const [tagSelectOpen, setTagSelectOpen] = useState(false);
 
-  // 初期値が変わったらフォーム値をリセット
+  // 初期値が変わったら、差分のみフォーム値にマージして反映する
+  // これにより、YouTube URL の自動取得などで親から initialValues が更新されても
+  // フォームの既存入力値（ユーザーが入力中の値）が上書きされるのを防ぎます。
+  const prevInitialRef = useRef<RecipeCreateRequest | null>(null);
   useEffect(() => {
-    setValues(props.initialValues);
+    const prev = prevInitialRef.current;
+    const next = props.initialValues;
+    if (!prev) {
+      // 初回セットは完全に置き換える
+      setValues(next);
+      prevInitialRef.current = next;
+      return;
+    }
+    // 差分キーのみ抽出してマージ
+    const changedKeys = Object.keys(next).filter((k) => {
+      const key = k as keyof RecipeCreateRequest;
+      const prevVal = prev[key];
+      const nextVal = next[key];
+      try {
+        return JSON.stringify(prevVal) !== JSON.stringify(nextVal);
+      } catch (e) {
+        return prevVal !== nextVal;
+      }
+    }) as (keyof RecipeCreateRequest)[];
+    if (changedKeys.length > 0) {
+      setValues((prevVals) => {
+        const merged = { ...prevVals } as RecipeCreateRequest;
+        changedKeys.forEach((k) => {
+          (merged as any)[k] = next[k];
+        });
+        return merged;
+      });
+    }
+    prevInitialRef.current = next;
   }, [props.initialValues]);
 
   // 値変更ハンドラ
-  const handleChange = <K extends keyof RecipeCreateRequest>(key: K, value: RecipeCreateRequest[K]) => {
+  const handleChange = <K extends keyof RecipeCreateRequest>(
+    key: K,
+    value: RecipeCreateRequest[K]
+  ) => {
     setValues((prev) => ({ ...prev, [key]: value }));
     // YouTube URL変更時は親にも通知
-    if (key === 'url' && props.onUrlChange) {
+    if (key === "url" && props.onUrlChange) {
       props.onUrlChange(value as string);
     }
   };
@@ -45,9 +80,10 @@ export default function RecipeForm(props: RecipeFormProps) {
   const handleTagToggle = (id: number) => {
     setValues((prev) => ({
       ...prev,
-      tag_ids: prev.tag_ids && prev.tag_ids.includes(id)
-        ? prev.tag_ids.filter((tagId) => tagId !== id)
-        : [...(prev.tag_ids || []), id],
+      tag_ids:
+        prev.tag_ids && prev.tag_ids.includes(id)
+          ? prev.tag_ids.filter((tagId) => tagId !== id)
+          : [...(prev.tag_ids || []), id],
     }));
   };
 
@@ -61,13 +97,23 @@ export default function RecipeForm(props: RecipeFormProps) {
     e.preventDefault();
     await props.onSubmit(values);
   };
-  
+
   // フォームエラー表示コンポーネント
   const FormError = ({ message }: { message?: string }) =>
     message ? (
       <div className="flex items-center text-red-500 text-sm mt-1">
-        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" />
+        <svg
+          className="w-4 h-4 mr-1"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 9v2m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"
+          />
         </svg>
         {message}
       </div>
@@ -87,7 +133,7 @@ export default function RecipeForm(props: RecipeFormProps) {
           <button
             type="button"
             className="text-sm bg-red-500 text-white px-2 py-1 border border-black rounded hover:bg-red-800 ml-2"
-            onClick={() => window.open('https://youtube.com', '_blank')}
+            onClick={() => window.open("https://youtube.com", "_blank")}
           >
             YouTubeへ
           </button>
@@ -97,7 +143,7 @@ export default function RecipeForm(props: RecipeFormProps) {
           type="text"
           name="url"
           value={values.url}
-          onChange={(e) => handleChange('url', e.target.value)}
+          onChange={(e) => handleChange("url", e.target.value)}
           required
           className="bg-white rounded-md w-full p-1.5 common-border-orange text-sm"
           placeholder="URLをコピーするとサムネイルとレシピ名は自動で入るよ"
@@ -105,7 +151,6 @@ export default function RecipeForm(props: RecipeFormProps) {
         <FormError message={props.errors.youtubeUrl} />
         <FormError message={props.urlerror} />
       </div>
-
 
       {/* レシピ名 */}
       <div>
@@ -115,7 +160,7 @@ export default function RecipeForm(props: RecipeFormProps) {
             type="text"
             name="name"
             value={values.name}
-            onChange={(e) => handleChange('name', e.target.value)}
+            onChange={(e) => handleChange("name", e.target.value)}
             required
             className="bg-white rounded-md w-full mt-1 p-1.5 border common-border-orange "
           />
@@ -124,20 +169,23 @@ export default function RecipeForm(props: RecipeFormProps) {
       </div>
       {/* サムネイル */}
       <div>
-        <ThumbnailInput youtubeUrl={values.url} onChange={handleThumbnailChange} />
+        <ThumbnailInput
+          youtubeUrl={values.url}
+          onChange={handleThumbnailChange}
+        />
         <FormError message={props.errors.thumbnail} />
       </div>
       {/* 食材選択 */}
       <IngredientSearch
         selectedIds={values.ingredient_ids}
-        onChange={(ids) => handleChange('ingredient_ids', ids)}
+        onChange={(ids) => handleChange("ingredient_ids", ids)}
         ingredients={props.ingredients}
       />
       {/* カテゴリ選択 */}
       <CategorySelect
         value={values.category_id}
         onChange={(id) => {
-          if (typeof id === 'number') handleChange('category_id', id);
+          if (typeof id === "number") handleChange("category_id", id);
         }}
         categories={props.categories}
         enableSelectAll={false}
@@ -155,7 +203,9 @@ export default function RecipeForm(props: RecipeFormProps) {
           <span className="font-bold mr-1">選択中：</span>
           {values.tag_ids && values.tag_ids.length > 0 ? (
             props.tags
-              .filter((tag) => values.tag_ids && values.tag_ids.includes(tag.id))
+              .filter(
+                (tag) => values.tag_ids && values.tag_ids.includes(tag.id)
+              )
               .map((tag) => <RecipeTag key={tag.id} recipeTag={tag} />)
           ) : (
             <span className="text-gray-400">未選択</span>
@@ -168,8 +218,8 @@ export default function RecipeForm(props: RecipeFormProps) {
           メモ（任意）
           <textarea
             name="notes"
-            value={values.notes || ''}
-            onChange={(e) => handleChange('notes', e.target.value)}
+            value={values.notes || ""}
+            onChange={(e) => handleChange("notes", e.target.value)}
             className="w-full h-24 p-3 rounded-lg mt-1 resize-none common-border-orange outline-none"
             placeholder="🖊調理時間や必要な調味料などを自由に記述"
           ></textarea>
@@ -181,7 +231,7 @@ export default function RecipeForm(props: RecipeFormProps) {
         disabled={props.loading}
         className="bg-orange-400 w-full text-white font-bold py-2 px-4 rounded hover:bg-orange-600 disabled:opacity-50"
       >
-        {props.editMode ? '更新する' : 'レシピを追加する'}
+        {props.editMode ? "更新する" : "レシピを追加する"}
       </button>
       {/* エラー表示（食材 or カテゴリのみボタン↓ */}
       <FormError message={props.errors.ingredients} />
@@ -196,5 +246,4 @@ export default function RecipeForm(props: RecipeFormProps) {
       />
     </form>
   );
-};
-
+}
