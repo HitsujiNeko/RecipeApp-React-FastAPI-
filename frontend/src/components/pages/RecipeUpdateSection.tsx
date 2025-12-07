@@ -26,6 +26,7 @@ export default function RecipeUpdateSection(props: RecipeUpdateSectionProps) {
     mode: "update",
     initialRecipe: props.recipe,
     existingRecipes: props.existingRecipes,
+    currentRecipeId: props.recipeId,
     onSubmit: async (values: RecipeCreateRequest) => {
       await updateRecipe(props.recipeId, values);
       alert("レシピが更新されました");

@@ -21,6 +21,7 @@ type RecipeFormControllerProps = {
   existingRecipes?: RecipeModel[]; // バリデーション用既存レシピ一覧
   onSubmit: (values: RecipeCreateRequest) => Promise<void>;
   defaultCategoryId?: number;
+  currentRecipeId?: number; // 編集時の現在のレシピID
 };
 
 type UseRecipeFormControllerReturn = {
@@ -45,6 +46,7 @@ export default function useRecipeFormController({
   existingRecipes = [],
   onSubmit,
   defaultCategoryId,
+  currentRecipeId,
 }: RecipeFormControllerProps): UseRecipeFormControllerReturn {
   // 状態管理
   const [urlError, setUrlError] = useState<string>("");
@@ -143,7 +145,7 @@ export default function useRecipeFormController({
 
   //　送信ハンドラ
   const handleSubmit = async (values: RecipeCreateRequest) => {
-    const errors = validateRecipeForm(values, existingRecipes ?? []);
+    const errors = validateRecipeForm(values, existingRecipes ?? [], currentRecipeId);
     setFormErrors(errors);
     if (Object.keys(errors).length > 0) return;
     setFormSubmitting(true);

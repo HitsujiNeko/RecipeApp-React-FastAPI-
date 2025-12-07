@@ -5,7 +5,8 @@ export type RecipeFormErrors = { [key: string]: string };
 
 export function validateRecipeForm(
   values: RecipeCreateRequest,
-  existingRecipes: RecipeModel[]
+  existingRecipes: RecipeModel[],
+  currentRecipeId?: number // 編集時は自分自身のIDを渡す
 ): RecipeFormErrors {
   const errors: RecipeFormErrors = {};
 	// 必須チェック
@@ -15,11 +16,11 @@ export function validateRecipeForm(
   if (!values.ingredient_ids || values.ingredient_ids.length === 0) errors.ingredients = "最低1つ以上の食材を選択してください";
   if (!values.category_id) errors.category = "カテゴリを選択してください";
 	
-	// 重複チェック
-  if (existingRecipes.some(r => r.name === values.name)) {
+	// 重複チェック（編集時は自分自身を除外）
+  if (existingRecipes.some(r => r.id !== currentRecipeId && r.name === values.name)) {
     errors.name = "同じレシピ名のレシピが既に存在します";
   }
-  if (existingRecipes.some(r => r.url === values.url)) {
+  if (existingRecipes.some(r => r.id !== currentRecipeId && r.url === values.url)) {
     errors.youtubeUrl = "同じYouTube URLのレシピが既に存在します";
   }
   return errors;
